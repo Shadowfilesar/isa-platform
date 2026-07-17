@@ -1,55 +1,54 @@
 <?php
 
 use App\Http\Controllers\ActivationController;
-use App\Http\Controllers\Admin\AdminAuthController;
-use App\Http\Controllers\Admin\AdminCaseController;
-use App\Http\Controllers\Admin\AdminCaseFileController;
-use App\Http\Controllers\Admin\AdminDashboardController;
-use App\Http\Controllers\Admin\AdminDirectorMessageController;
-use App\Http\Controllers\Admin\AdminMissionCodeController;
-use App\Http\Controllers\Admin\AdminNotificationController;
-use App\Http\Controllers\Admin\AdminPlayerController;
+use App\Http\Controllers\Admin\AuthController as AdminAuthController;
+use App\Http\Controllers\Admin\CaseController;
+use App\Http\Controllers\Admin\CaseFileController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\DirectorMessageController;
+use App\Http\Controllers\Admin\MissionCodeController;
+use App\Http\Controllers\Admin\NotificationController;
+use App\Http\Controllers\Admin\PlayerController;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\CaseController;
-use App\Http\Controllers\CaseFileController;
-use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\CaseController as PlayerCaseController;
+use App\Http\Controllers\CaseFileController as PlayerCaseFileController;
+use App\Http\Controllers\DashboardController as PlayerDashboardController;
 use App\Http\Controllers\InvestigationBoardController;
 use App\Http\Controllers\MessageController;
-use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\NotificationController as PlayerNotificationController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware('guest.player')
-    ->group(function () {
-        Route::get('/', fn () => redirect()->route('login'));
+Route::middleware('guest.player')->group(function () {
+    Route::get('/', fn () => redirect()->route('login'));
 
-        Route::get('/login', [AuthController::class, 'create'])->name('login');
-        Route::post('/login', [AuthController::class, 'store'])->name('login.store');
+    Route::get('/login', [AuthController::class, 'create'])->name('login');
+    Route::post('/login', [AuthController::class, 'store'])->name('login.store');
 
-        Route::get('/activate/{account_code}', [ActivationController::class, 'create'])
-            ->name('activation.create');
+    Route::get('/activate/{account_code}', [ActivationController::class, 'create'])
+        ->name('activation.create');
 
-        Route::post('/activate/{account_code}', [ActivationController::class, 'store'])
-            ->name('activation.store');
-    });
+    Route::post('/activate/{account_code}', [ActivationController::class, 'store'])
+        ->name('activation.store');
+});
 
 Route::middleware('auth.player')->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard', [PlayerDashboardController::class, 'index'])->name('dashboard');
 
-    Route::post('/dashboard/redeem', [DashboardController::class, 'redeem'])
+    Route::post('/dashboard/redeem', [PlayerDashboardController::class, 'redeem'])
         ->name('mission.redeem');
 
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
 
     Route::post('/logout', [AuthController::class, 'destroy'])->name('logout');
 
-    Route::resource('cases', CaseController::class)
+    Route::resource('cases', PlayerCaseController::class)
         ->only(['index', 'show'])
         ->parameters([
             'cases' => 'case',
         ]);
 
-    Route::get('/cases/{case}/files/{file}', [CaseFileController::class, 'show'])
+    Route::get('/cases/{case}/files/{file}', [PlayerCaseFileController::class, 'show'])
         ->name('case-files.show');
 
     Route::get('/cases/{case}/board', [InvestigationBoardController::class, 'show'])
@@ -79,13 +78,13 @@ Route::middleware('auth.player')->group(function () {
     Route::delete('/cases/{case}/board/connections/{connection}', [InvestigationBoardController::class, 'deleteConnection'])
         ->name('investigation-board.connections.destroy');
 
-    Route::get('/notifications', [NotificationController::class, 'index'])
+    Route::get('/notifications', [PlayerNotificationController::class, 'index'])
         ->name('notifications.index');
 
-    Route::post('/notifications/{notification}/read', [NotificationController::class, 'read'])
+    Route::post('/notifications/{notification}/read', [PlayerNotificationController::class, 'read'])
         ->name('notifications.read');
 
-    Route::post('/notifications/read-all', [NotificationController::class, 'readAll'])
+    Route::post('/notifications/read-all', [PlayerNotificationController::class, 'readAll'])
         ->name('notifications.read-all');
 
     Route::get('/messages', [MessageController::class, 'index'])
@@ -108,7 +107,7 @@ Route::prefix('admin')
 Route::prefix('admin')
     ->middleware('auth.admin')
     ->group(function () {
-        Route::get('/', [AdminDashboardController::class, 'index'])
+        Route::get('/', [DashboardController::class, 'index'])
             ->name('admin.dashboard');
 
         Route::post('/logout', [AdminAuthController::class, 'destroy'])
@@ -122,19 +121,19 @@ Route::prefix('admin')
 
         Route::resource(
             'players',
-            AdminPlayerController::class
+            PlayerController::class
         )->except([
             'show',
         ])->names('admin.players');
 
         Route::get(
             '/players/{player}/assign-cases',
-            [AdminPlayerController::class, 'assignCases']
+            [PlayerController::class, 'assignCases']
         )->name('admin.players.assign-cases');
 
         Route::post(
             '/players/{player}/assign-cases',
-            [AdminPlayerController::class, 'saveAssignedCases']
+            [PlayerController::class, 'saveAssignedCases']
         )->name('admin.players.assign-cases.save');
 
         /*
@@ -145,42 +144,42 @@ Route::prefix('admin')
 
         Route::get(
             '/notifications',
-            [AdminNotificationController::class, 'index']
+            [NotificationController::class, 'index']
         )->name('admin.notifications.index');
 
         Route::get(
             '/notifications/create',
-            [AdminNotificationController::class, 'create']
+            [NotificationController::class, 'create']
         )->name('admin.notifications.create');
 
         Route::post(
             '/notifications',
-            [AdminNotificationController::class, 'store']
+            [NotificationController::class, 'store']
         )->name('admin.notifications.store');
 
         Route::get(
             '/notifications/{notification}',
-            [AdminNotificationController::class, 'show']
+            [NotificationController::class, 'show']
         )->name('admin.notifications.show');
 
         Route::delete(
             '/notifications/{notification}',
-            [AdminNotificationController::class, 'destroy']
+            [NotificationController::class, 'destroy']
         )->name('admin.notifications.destroy');
 
         Route::post(
             '/notifications/broadcast',
-            [AdminNotificationController::class, 'broadcast']
+            [NotificationController::class, 'broadcast']
         )->name('admin.notifications.broadcast');
 
         Route::patch(
             '/notifications/{notification}/read',
-            [AdminNotificationController::class, 'markAsRead']
+            [NotificationController::class, 'markAsRead']
         )->name('admin.notifications.read');
 
         Route::patch(
             '/notifications/read-all',
-            [AdminNotificationController::class, 'markAllAsRead']
+            [NotificationController::class, 'markAllAsRead']
         )->name('admin.notifications.read-all');
 
         /*
@@ -191,12 +190,12 @@ Route::prefix('admin')
 
         Route::get(
             '/messages/create',
-            [AdminDirectorMessageController::class, 'create']
+            [DirectorMessageController::class, 'create']
         )->name('admin.messages.create');
 
         Route::post(
             '/messages',
-            [AdminDirectorMessageController::class, 'store']
+            [DirectorMessageController::class, 'store']
         )->name('admin.messages.store');
 
         /*
@@ -207,7 +206,7 @@ Route::prefix('admin')
 
         Route::resource(
             'mission-codes',
-            AdminMissionCodeController::class
+            MissionCodeController::class
         )->except([
             'show',
             'edit',
@@ -216,7 +215,7 @@ Route::prefix('admin')
 
         Route::get(
             '/mission-codes/export',
-            [AdminMissionCodeController::class, 'export']
+            [MissionCodeController::class, 'export']
         )->name('admin.mission-codes.export');
 
         /*
@@ -227,7 +226,7 @@ Route::prefix('admin')
 
         Route::resource(
             'cases',
-            AdminCaseController::class
+            CaseController::class
         )->names('admin.cases');
 
         /*
@@ -238,7 +237,7 @@ Route::prefix('admin')
 
         Route::resource(
             'cases.files',
-            AdminCaseFileController::class
+            CaseFileController::class
         )->except([
             'show',
         ])->names([
@@ -252,12 +251,12 @@ Route::prefix('admin')
 
         Route::post(
             '/cases/{case}/files/reorder',
-            [AdminCaseFileController::class, 'reorder']
+            [CaseFileController::class, 'reorder']
         )->name('admin.case-files.reorder');
 
         Route::patch(
             '/cases/{case}/files/{file}/toggle-lock',
-            [AdminCaseFileController::class, 'toggleLock']
+            [CaseFileController::class, 'toggleLock']
         )->name('admin.case-files.toggle-lock');
 
         /*

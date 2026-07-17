@@ -337,7 +337,7 @@ class InvestigationBoardService
                     'title' => $file->title,
                     'description' => $file->description,
                     'url' => route('case-files.show', ['case' => $case, 'file' => $file->id]),
-                    'pin_url' => route('investigation-board.pin', ['case' => $case]),
+                    'pin_url' => route('investigation-board.pin', ['case' => $case,'file' => $file->id,]),
                     'preview_html' => $this->buildPreviewHtml($file, $boardItem),
                     'category' => $file->category,
                     'type' => $file->file_type,
