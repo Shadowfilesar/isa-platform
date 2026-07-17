@@ -196,9 +196,7 @@
                 </div>
             </div>
 
-            @if($section === 'Board')
-                @include('dashboard.board.index')
-            @else
+            
                 <div class="grid gap-6 xl:grid-cols-4">
                     <div class="xl:col-span-3 space-y-6">
                         <div class="executive-card p-6">
