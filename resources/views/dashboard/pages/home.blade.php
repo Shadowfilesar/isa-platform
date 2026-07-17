@@ -10,15 +10,6 @@
 
 @section('content')
 
-<div class="min-h-screen flex">
-
-    @include('dashboard.partials.sidebar')
-
-    <div class="flex-1">
-
-        @include('dashboard.partials.header')
-
-        @include('dashboard.partials.breadcrumb')
 
         @include('dashboard.partials.alerts')
 
@@ -575,9 +566,5 @@
             </div>
 
         </main>
-
-    </div>
-
-</div>
 
 @endsection

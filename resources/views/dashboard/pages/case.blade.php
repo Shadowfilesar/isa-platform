@@ -446,6 +446,6 @@
                         </div>
                     </div>
                 </div>
-            @endif
+            
         </main>
 @endsection

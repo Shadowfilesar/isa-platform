@@ -1,10 +1,17 @@
 <div class="{{ $containerClass }}">
     @foreach($navSections as $navSection)
         @php
-            $isOverview = $navSection === 'Overview';
-            $navUrl = $isOverview
-                ? route('cases.show', $case)
-                : route('cases.show', [$case, 'section' => $navSection]);
+            if ($navSection === 'Board') {
+                $navUrl = route('investigation-board.show', $case);
+            } elseif ($navSection === 'Overview') {
+                $navUrl = route('cases.show', $case);
+            } else {
+                $navUrl = route('cases.show', [
+                    'case' => $case,
+                    'section' => $navSection,
+                ]);
+            }
+
             $isActive = $section === $navSection;
         @endphp
 
