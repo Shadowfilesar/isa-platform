@@ -1,10 +1,9 @@
-@extends('layouts.app')
+@extends('layouts.board')
 
 @section('title', ($case->title ?? 'Mission') . ' Board')
 @section('page-title', ($case->title ?? 'Mission') . ' Board')
 @section('page-description', 'Investigation workspace')
 @section('body_class', 'investigation-mode')
-@section('workspace_mode', 'investigation')
 
 @section('content')
 @php

@@ -1,0 +1,36 @@
+/* ==========================================
+   Forms
+========================================== */
+
+.isa-input,
+.isa-select,
+.isa-textarea{
+    width:100%;
+    background:#172033;
+    color:#ffffff;
+    border:1px solid #2c3d61;
+    border-radius:10px;
+    padding:12px 16px;
+    transition:.2s;
+}
+
+.isa-input::placeholder,
+.isa-textarea::placeholder{
+    color:#7d8daa;
+}
+
+.isa-input:focus,
+.isa-select:focus,
+.isa-textarea:focus{
+    outline:none;
+    border-color:#f59e0b;
+    box-shadow:0 0 0 3px rgba(245,158,11,.15);
+}
+
+.isa-select{
+    appearance:none;
+}
+
+input[type="checkbox"]{
+    accent-color:#f59e0b;
+}

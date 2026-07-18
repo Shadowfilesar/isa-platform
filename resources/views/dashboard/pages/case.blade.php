@@ -1,15 +1,19 @@
 @extends('layouts.app')
 
+
 @section('title', $case->title)
 @section('page-title', $case->title)
 @section('page-description', 'Investigation Workspace')
 @section('breadcrumb', $case->title)
 
+
 @section('content')
 @php
     $navSections = ['Overview', 'Evidence', 'Witnesses', 'Suspects', 'Timeline', 'Notes', 'Documents', 'Board'];
 
+
     $detailSections = ['Witnesses', 'Suspects', 'Timeline', 'Notes', 'Documents'];
+
 
     $sectionMeta = [
         'Witnesses' => [
@@ -69,7 +73,9 @@
         ],
     ];
 
+
     $activeSectionMeta = $sectionMeta[$section] ?? null;
+
 
     $workspaceTitle = match ($section) {
         'Evidence' => 'Evidence Workspace',
@@ -83,6 +89,7 @@
     };
 @endphp
 
+
         <main class="p-4 sm:p-6 lg:p-8 space-y-6 lg:space-y-8">
             <div class="executive-card p-6 sm:p-8">
                 <div class="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
@@ -92,10 +99,12 @@
                         <p class="mt-4 text-sm sm:text-base text-slate-400">{{ $case->description }}</p>
                     </div>
 
+
                     <div class="text-left lg:text-right">
                         <span class="rounded-full bg-blue-900 px-4 py-2 text-sm font-semibold text-blue-300">In Progress</span>
                     </div>
                 </div>
+
 
                 <div class="mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
                     <div>
@@ -103,15 +112,18 @@
                         <div class="mt-2 text-white">Determine the truth behind this investigation.</div>
                     </div>
 
+
                     <div>
                         <div class="text-xs uppercase tracking-widest text-slate-500">Classification</div>
                         <div class="mt-2 font-semibold text-red-400">TOP SECRET</div>
                     </div>
 
+
                     <div>
                         <div class="text-xs uppercase tracking-widest text-slate-500">Priority</div>
                         <div class="mt-2 font-semibold text-amber-400">HIGH</div>
                     </div>
+
 
                     <div>
                         <div class="text-xs uppercase tracking-widest text-slate-500">Last Order</div>
@@ -120,6 +132,7 @@
                 </div>
             </div>
 
+
             <div class="grid gap-6 lg:grid-cols-2">
                 <div class="executive-card p-6">
                     <div class="flex items-center justify-between">
@@ -127,9 +140,11 @@
                         <span class="text-sm font-semibold text-amber-400">{{ $stats['unlockedFiles'] }}/{{ $stats['totalFiles'] }}</span>
                     </div>
 
+
                     @php
                         $progress = $stats['totalFiles'] > 0 ? round(($stats['unlockedFiles'] / $stats['totalFiles']) * 100) : 0;
                     @endphp
+
 
                     <div class="mt-6">
                         <div class="mb-2 flex justify-between text-sm">
@@ -137,14 +152,17 @@
                             <span class="text-white">{{ $progress }}%</span>
                         </div>
 
+
                         <div class="h-3 overflow-hidden rounded-full bg-slate-800">
                             <div class="h-3 rounded-full bg-amber-600" style="width: {{ $progress }}%"></div>
                         </div>
                     </div>
                 </div>
 
+
                 <div class="executive-card p-6">
                     <h2 class="text-lg sm:text-xl font-bold text-white">Mission Objectives</h2>
+
 
                     <ul class="mt-6 space-y-4">
                         <li class="flex items-center gap-3">
@@ -167,26 +185,31 @@
                 </div>
             </div>
 
+
             <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
                 <div class="executive-card p-5">
                     <div class="text-slate-500">Total Files</div>
                     <div class="mt-3 text-3xl font-bold text-white">{{ $stats['totalFiles'] }}</div>
                 </div>
 
+
                 <div class="executive-card p-5">
                     <div class="text-slate-500">Locked</div>
                     <div class="mt-3 text-3xl font-bold text-red-400">{{ $stats['lockedFiles'] }}</div>
                 </div>
+
 
                 <div class="executive-card p-5">
                     <div class="text-slate-500">Unlocked</div>
                     <div class="mt-3 text-3xl font-bold text-green-400">{{ $stats['unlockedFiles'] }}</div>
                 </div>
 
+
                 <div class="executive-card p-5">
                     <div class="text-slate-500">Sections</div>
                     <div class="mt-3 text-3xl font-bold text-white">{{ $stats['totalSections'] }}</div>
                 </div>
+
 
                 <div class="executive-card p-5 sm:col-span-2 xl:col-span-1">
                     <div class="text-slate-500">Last Updated</div>
@@ -196,7 +219,8 @@
                 </div>
             </div>
 
-            
+
+           
                 <div class="grid gap-6 xl:grid-cols-4">
                     <div class="xl:col-span-3 space-y-6">
                         <div class="executive-card p-6">
@@ -206,10 +230,12 @@
                                     <p class="mt-2 text-sm text-slate-400">Access investigation materials by workspace section.</p>
                                 </div>
 
+
                                 <div class="rounded-lg border border-slate-800 bg-slate-900 px-4 py-3 text-sm text-slate-300">
                                     Active Section <span class="font-semibold text-white">{{ $section }}</span>
                                 </div>
                             </div>
+
 
                             @include('dashboard.partials.case-workspace-navigation', [
                                 'navSections' => $navSections,
@@ -221,6 +247,7 @@
                                 'inactiveClass' => 'border-slate-700 bg-slate-900 text-slate-300 hover:border-amber-500 hover:text-white',
                             ])
 
+
                             @if($section === 'Evidence')
                                 <div class="mt-6 grid gap-4 sm:grid-cols-3">
                                     <div class="executive-card p-5">
@@ -228,10 +255,12 @@
                                         <div class="mt-3 text-2xl font-bold text-white">{{ $files->count() }}</div>
                                     </div>
 
+
                                     <div class="executive-card p-5">
                                         <div class="text-xs uppercase tracking-widest text-slate-500">Locked Evidence</div>
                                         <div class="mt-3 text-2xl font-bold text-red-400">{{ $files->where('locked', true)->count() }}</div>
                                     </div>
+
 
                                     <div class="executive-card p-5">
                                         <div class="text-xs uppercase tracking-widest text-slate-500">Accessible Evidence</div>
@@ -240,6 +269,7 @@
                                 </div>
                             @endif
 
+
                             @if($activeSectionMeta)
                                 <div class="mt-6 grid gap-4 sm:grid-cols-3">
                                     <div class="executive-card p-5">
@@ -247,10 +277,12 @@
                                         <div class="mt-3 text-2xl font-bold text-white">{{ $files->count() }}</div>
                                     </div>
 
+
                                     <div class="executive-card p-5">
                                         <div class="text-xs uppercase tracking-widest text-slate-500">{{ $activeSectionMeta['lockedLabel'] }}</div>
                                         <div class="mt-3 text-2xl font-bold text-red-400">{{ $files->where('locked', true)->count() }}</div>
                                     </div>
+
 
                                     <div class="executive-card p-5">
                                         <div class="text-xs uppercase tracking-widest text-slate-500">{{ $activeSectionMeta['availableLabel'] }}</div>
@@ -260,6 +292,7 @@
                             @endif
                         </div>
 
+
                         <div class="executive-card overflow-hidden">
                             <div class="border-b border-slate-800 bg-slate-900/70 px-5 py-4 sm:px-8 sm:py-5">
                                 <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
@@ -268,12 +301,14 @@
                                 </div>
                             </div>
 
+
                             @if($activeSectionMeta)
                                 <div class="p-5 sm:p-8">
                                     @forelse($files as $file)
                                         @php
                                             $isTimeline = $section === 'Timeline';
                                         @endphp
+
 
                                         @if($isTimeline)
                                             <div class="relative pl-8 sm:pl-10 {{ !$loop->last ? 'pb-6' : '' }}">
@@ -283,11 +318,13 @@
                                                 </div>
                                         @endif
 
+
                                         <div class="rounded-xl border border-slate-800 bg-slate-900/70 p-5 sm:p-6 {{ !$isTimeline && !$loop->last ? 'mb-4' : '' }}">
                                             <div class="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
                                                 <div class="min-w-0 flex-1">
                                                     <div class="flex flex-wrap items-center gap-3">
                                                         <h3 class="text-base sm:text-lg font-semibold text-white">{{ $file->title }}</h3>
+
 
                                                         @if($file->locked)
                                                             <span class="rounded-full border border-red-800 bg-red-950/60 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-red-300">Locked</span>
@@ -296,9 +333,11 @@
                                                         @endif
                                                     </div>
 
+
                                                     @if($file->description)
                                                         <p class="mt-4 text-sm sm:text-base leading-6 text-slate-300">{{ $file->description }}</p>
                                                     @endif
+
 
                                                     <div class="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
                                                         <div class="rounded-lg border border-slate-800 bg-slate-950/60 px-4 py-3">
@@ -306,10 +345,12 @@
                                                             <div class="mt-2 text-sm font-medium text-white">{{ $file->title }}</div>
                                                         </div>
 
+
                                                         <div class="rounded-lg border border-slate-800 bg-slate-950/60 px-4 py-3">
                                                             <div class="text-[11px] uppercase tracking-[0.2em] text-slate-500">Display Order</div>
                                                             <div class="mt-2 text-sm font-medium text-white">{{ $file->display_order }}</div>
                                                         </div>
+
 
                                                         <div class="rounded-lg border border-slate-800 bg-slate-950/60 px-4 py-3 sm:col-span-2 xl:col-span-1">
                                                             <div class="text-[11px] uppercase tracking-[0.2em] text-slate-500">Last Updated</div>
@@ -317,6 +358,7 @@
                                                         </div>
                                                     </div>
                                                 </div>
+
 
                                                 <div class="w-full lg:w-auto lg:min-w-[170px]">
                                                     @if($file->locked)
@@ -333,6 +375,7 @@
                                                 </div>
                                             </div>
                                         </div>
+
 
                                         @if($isTimeline)
                                             </div>
@@ -353,6 +396,7 @@
                                                 <div class="flex flex-wrap items-center gap-2">
                                                     <h3 class="text-base sm:text-lg font-semibold text-white">{{ $file->title }}</h3>
 
+
                                                     @if($section === 'Evidence')
                                                         @if($file->locked)
                                                             <span class="rounded-full bg-red-900 px-3 py-1 text-xs font-semibold text-red-300">Locked</span>
@@ -361,6 +405,7 @@
                                                         @endif
                                                     @endif
                                                 </div>
+
 
                                                 <div class="mt-2 flex flex-wrap items-center gap-4 text-xs sm:text-sm text-slate-500">
                                                     @if($file->section)
@@ -372,10 +417,12 @@
                                                     @endif
                                                 </div>
 
+
                                                 @if($file->description)
                                                     <p class="mt-3 text-sm sm:text-base text-slate-400">{{ $file->description }}</p>
                                                 @endif
                                             </div>
+
 
                                             <div class="shrink-0">
                                                 @if($file->locked)
@@ -404,9 +451,11 @@
                         </div>
                     </div>
 
+
                     <div class="space-y-6">
                         <div class="executive-card p-6">
                             <h2 class="text-lg font-bold text-white">Investigation Workspace</h2>
+
 
                             @include('dashboard.partials.case-workspace-navigation', [
                                 'navSections' => $navSections,
@@ -419,8 +468,10 @@
                             ])
                         </div>
 
+
                         <div class="executive-card p-6">
                             <h2 class="text-lg font-bold text-white">Section Brief</h2>
+
 
                             <div class="mt-6 space-y-4 text-sm">
                                 <div class="flex items-center justify-between gap-4">
@@ -428,15 +479,18 @@
                                     <span class="font-semibold text-white">{{ $section }}</span>
                                 </div>
 
+
                                 <div class="flex items-center justify-between gap-4">
                                     <span class="text-slate-500">Visible Files</span>
                                     <span class="font-semibold text-white">{{ $files->count() }}</span>
                                 </div>
 
+
                                 <div class="flex items-center justify-between gap-4">
                                     <span class="text-slate-500">Locked Files</span>
                                     <span class="font-semibold text-red-400">{{ $files->where('locked', true)->count() }}</span>
                                 </div>
+
 
                                 <div class="flex items-center justify-between gap-4">
                                     <span class="text-slate-500">Accessible Files</span>
@@ -446,6 +500,8 @@
                         </div>
                     </div>
                 </div>
-            
+           
+
+
         </main>
 @endsection
