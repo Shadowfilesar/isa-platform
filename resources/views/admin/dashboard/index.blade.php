@@ -1,12 +1,12 @@
-@extends('layouts.admin')
+@extends('layouts.app')
 
-@section('title','ISA Administration')
+@section('title','Admin')
 
 @section('content')
 
-<div class="space-y-8">
+<div class="p-10">
 
-    <div class="flex items-center justify-between">
+    <div class="flex justify-between items-center mb-8">
 
         <div>
 
@@ -16,45 +16,29 @@
 
             </h1>
 
-            <p class="mt-3 text-slate-500">
+            <p class="text-slate-500 mt-3">
 
-                Intelligence Operations Control Center
+                Control Center
 
             </p>
 
         </div>
 
-        <div class="flex flex-wrap gap-3">
-
-            <a
-                href="{{ route('admin.players.create') }}"
-                class="rounded-lg bg-emerald-700 px-6 py-3 font-semibold text-white hover:bg-emerald-600">
-
-                + New Player
-
-            </a>
+        <div class="flex gap-3">
 
             <a
                 href="{{ route('admin.cases.create') }}"
-                class="rounded-lg bg-amber-600 px-6 py-3 font-semibold text-white hover:bg-amber-500">
+                class="rounded bg-amber-600 px-6 py-3 text-white">
 
-                + New Case
+                New Case
 
             </a>
 
             <a
                 href="{{ route('admin.mission-codes.index') }}"
-                class="rounded-lg bg-slate-700 px-6 py-3 font-semibold text-white hover:bg-slate-600">
+                class="rounded bg-slate-800 px-6 py-3 text-white">
 
                 Mission Codes
-
-            </a>
-
-            <a
-                href="{{ route('admin.messages.create') }}"
-                class="rounded-lg bg-blue-700 px-6 py-3 font-semibold text-white hover:bg-blue-600">
-
-                Director Message
 
             </a>
 
@@ -62,33 +46,17 @@
 
     </div>
 
-    <div class="grid gap-6 lg:grid-cols-5">
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
 
-        <div class="card p-6">
+        <div class="executive-card executive-glow p-6">
 
-            <p class="text-sm text-slate-400">
-
-                Total Players
-
-            </p>
-
-            <div class="mt-4 text-4xl font-bold text-white">
-
-                {{ $totalPlayers ?? 0 }}
-
-            </div>
-
-        </div>
-
-        <div class="card p-6">
-
-            <p class="text-sm text-slate-400">
+            <p class="text-slate-500">
 
                 Total Cases
 
             </p>
 
-            <div class="mt-4 text-4xl font-bold text-white">
+            <div class="text-4xl font-bold text-white mt-3">
 
                 {{ $totalCases }}
 
@@ -96,15 +64,15 @@
 
         </div>
 
-        <div class="card p-6">
+        <div class="executive-card executive-glow p-6">
 
-            <p class="text-sm text-slate-400">
+            <p class="text-slate-500">
 
-                Mission Codes
+                Total Mission Codes
 
             </p>
 
-            <div class="mt-4 text-4xl font-bold text-white">
+            <div class="text-4xl font-bold text-white mt-3">
 
                 {{ $totalMissionCodes }}
 
@@ -112,15 +80,15 @@
 
         </div>
 
-        <div class="card p-6">
+        <div class="executive-card executive-glow p-6">
 
-            <p class="text-sm text-slate-400">
+            <p class="text-slate-500">
 
-                Used Codes
+                Used Mission Codes
 
             </p>
 
-            <div class="mt-4 text-4xl font-bold text-red-400">
+            <div class="text-4xl font-bold text-red-400 mt-3">
 
                 {{ $usedMissionCodes }}
 
@@ -128,15 +96,15 @@
 
         </div>
 
-        <div class="card p-6">
+        <div class="executive-card executive-glow p-6">
 
-            <p class="text-sm text-slate-400">
+            <p class="text-slate-500">
 
-                Available Codes
+                Unused Mission Codes
 
             </p>
 
-            <div class="mt-4 text-4xl font-bold text-green-400">
+            <div class="text-4xl font-bold text-green-400 mt-3">
 
                 {{ $unusedMissionCodes }}
 
@@ -145,35 +113,18 @@
         </div>
 
     </div>
-        <div class="grid gap-8 xl:grid-cols-3">
 
-        <div class="card xl:col-span-2 overflow-hidden">
+    <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
 
-            <div class="flex items-center justify-between border-b border-slate-800 p-6">
+        <div class="executive-card xl:col-span-2 overflow-hidden">
 
-                <div>
+            <div class="p-6 border-b border-slate-800">
 
-                    <h2 class="text-2xl font-bold text-white">
+                <h2 class="text-2xl font-bold text-white">
 
-                        Recent Investigations
+                    Recent Cases
 
-                    </h2>
-
-                    <p class="mt-2 text-sm text-slate-500">
-
-                        Latest investigation files created in ISA.
-
-                    </p>
-
-                </div>
-
-                <a
-                    href="{{ route('admin.cases.index') }}"
-                    class="rounded-lg bg-slate-800 px-5 py-2 text-white hover:bg-slate-700">
-
-                    View All
-
-                </a>
+                </h2>
 
             </div>
 
@@ -183,35 +134,11 @@
 
                     <tr>
 
-                        <th class="p-4 text-left">
-
-                            Code
-
-                        </th>
-
-                        <th class="p-4 text-left">
-
-                            Investigation
-
-                        </th>
-
-                        <th class="p-4 text-left">
-
-                            Difficulty
-
-                        </th>
-
-                        <th class="p-4 text-left">
-
-                            Status
-
-                        </th>
-
-                        <th class="p-4 text-right">
-
-                            Actions
-
-                        </th>
+                        <th class="text-left p-4">Code</th>
+                        <th class="text-left p-4">Title</th>
+                        <th class="text-left p-4">Difficulty</th>
+                        <th class="text-left p-4">Status</th>
+                        <th class="text-right p-4">Actions</th>
 
                     </tr>
 
@@ -221,9 +148,9 @@
 
                 @forelse($recentCases as $case)
 
-                    <tr class="border-t border-slate-800 hover:bg-slate-900/40">
+                    <tr class="border-t border-slate-800">
 
-                        <td class="p-4 font-semibold text-white">
+                        <td class="p-4 text-white">
 
                             {{ $case->code }}
 
@@ -231,21 +158,13 @@
 
                         <td class="p-4">
 
-                            <div class="font-semibold text-white">
-
-                                {{ $case->title }}
-
-                            </div>
+                            {{ $case->title }}
 
                         </td>
 
                         <td class="p-4">
 
-                            <span class="rounded-full bg-slate-800 px-3 py-1 text-sm">
-
-                                {{ $case->difficulty }}
-
-                            </span>
+                            {{ $case->difficulty }}
 
                         </td>
 
@@ -253,7 +172,7 @@
 
                             @if($case->published)
 
-                                <span class="rounded-full bg-green-900 px-3 py-1 text-green-300">
+                                <span class="text-green-400">
 
                                     Published
 
@@ -261,7 +180,7 @@
 
                             @else
 
-                                <span class="rounded-full bg-yellow-900 px-3 py-1 text-yellow-300">
+                                <span class="text-yellow-400">
 
                                     Draft
 
@@ -273,11 +192,11 @@
 
                         <td class="p-4">
 
-                            <div class="flex justify-end gap-2">
+                            <div class="flex justify-end gap-3">
 
                                 <a
                                     href="{{ route('admin.case-files.index',$case) }}"
-                                    class="rounded-lg bg-slate-800 px-4 py-2 text-white hover:bg-slate-700">
+                                    class="rounded bg-slate-800 px-4 py-2 text-white">
 
                                     Files
 
@@ -285,7 +204,7 @@
 
                                 <a
                                     href="{{ route('admin.cases.edit',$case) }}"
-                                    class="rounded-lg bg-amber-600 px-4 py-2 text-white hover:bg-amber-500">
+                                    class="rounded bg-amber-600 px-4 py-2 text-white">
 
                                     Edit
 
@@ -301,11 +220,9 @@
 
                     <tr>
 
-                        <td
-                            colspan="5"
-                            class="py-16 text-center text-slate-500">
+                        <td colspan="5" class="text-center py-10 text-slate-500">
 
-                            No investigations available.
+                            No investigations created yet.
 
                         </td>
 
@@ -319,144 +236,31 @@
 
         </div>
 
-        <div class="space-y-6">
+        <div class="executive-card p-6">
 
-            <div class="card p-6">
+            <h2 class="text-2xl font-bold text-white mb-6">
 
-                <h2 class="mb-6 text-xl font-bold text-white">
+                Quick Actions
 
-                    Quick Actions
+            </h2>
 
-                </h2>
-                                <div class="space-y-3">
+            <div class="space-y-4">
 
-                    <a
-                        href="{{ route('admin.players.index') }}"
-                        class="block rounded-lg bg-emerald-700 px-5 py-4 text-center font-semibold text-white transition hover:bg-emerald-600">
+                <a
+                    href="{{ route('admin.cases.create') }}"
+                    class="block rounded bg-amber-600 px-5 py-4 text-center font-semibold text-white">
 
-                        👥 Manage Players
+                    New Case
 
-                    </a>
+                </a>
 
-                    <a
-                        href="{{ route('admin.cases.index') }}"
-                        class="block rounded-lg bg-amber-600 px-5 py-4 text-center font-semibold text-white transition hover:bg-amber-500">
+                <a
+                    href="{{ route('admin.mission-codes.index') }}"
+                    class="block rounded bg-slate-800 px-5 py-4 text-center font-semibold text-white">
 
-                        📂 Manage Cases
+                    Mission Codes
 
-                    </a>
-
-                    <a
-                        href="{{ route('admin.mission-codes.index') }}"
-                        class="block rounded-lg bg-slate-800 px-5 py-4 text-center font-semibold text-white transition hover:bg-slate-700">
-
-                        🔑 Mission Codes
-
-                    </a>
-
-                    <a
-                        href="{{ route('admin.messages.create') }}"
-                        class="block rounded-lg bg-blue-700 px-5 py-4 text-center font-semibold text-white transition hover:bg-blue-600">
-
-                        📨 Director Messages
-
-                    </a>
-
-                </div>
-
-            </div>
-
-            <div class="card p-6">
-
-                <h2 class="mb-6 text-xl font-bold text-white">
-
-                    System Overview
-
-                </h2>
-
-                <div class="space-y-5">
-
-                    <div class="flex items-center justify-between">
-
-                        <span class="text-slate-400">
-
-                            Players
-
-                        </span>
-
-                        <span class="font-bold text-white">
-
-                            {{ $totalPlayers ?? 0 }}
-
-                        </span>
-
-                    </div>
-
-                    <div class="flex items-center justify-between">
-
-                        <span class="text-slate-400">
-
-                            Cases
-
-                        </span>
-
-                        <span class="font-bold text-white">
-
-                            {{ $totalCases }}
-
-                        </span>
-
-                    </div>
-
-                    <div class="flex items-center justify-between">
-
-                        <span class="text-slate-400">
-
-                            Mission Codes
-
-                        </span>
-
-                        <span class="font-bold text-white">
-
-                            {{ $totalMissionCodes }}
-
-                        </span>
-
-                    </div>
-
-                    <div class="flex items-center justify-between">
-
-                        <span class="text-slate-400">
-
-                            Used Codes
-
-                        </span>
-
-                        <span class="font-bold text-red-400">
-
-                            {{ $usedMissionCodes }}
-
-                        </span>
-
-                    </div>
-
-                    <div class="flex items-center justify-between">
-
-                        <span class="text-slate-400">
-
-                            Available Codes
-
-                        </span>
-
-                        <span class="font-bold text-green-400">
-
-                            {{ $unusedMissionCodes }}
-
-                        </span>
-
-                    </div>
-
-                </div>
+                </a>
 
             </div>
 

@@ -1,4 +1,7 @@
-@extends('layouts.admin')
+<?php
+// resources/views/admin/players/assign-cases.blade.php
+?>
+@extends('layouts.app')
 
 @section('title','Assign Cases')
 
@@ -8,7 +11,7 @@
 
     <div class="mb-8">
 
-        <a
+        
             href="{{ route('admin.players.edit',$player) }}"
             class="inline-flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-900 px-5 py-3 text-white hover:border-amber-500">
 
@@ -100,7 +103,7 @@
                         type="checkbox"
                         name="cases[]"
                         value="{{ $case->id }}"
-                        {{ $player->cases->contains($case->id) ? 'checked' : '' }}>
+                        {{ in_array($case->id, $assignedCases) ? 'checked' : '' }}>
 
                 </label>
 
@@ -115,7 +118,8 @@
             @endforelse
 
         </div>
-                <div class="border-t border-slate-800 pt-8">
+
+        <div class="border-t border-slate-800 pt-8">
 
             <h2 class="mb-6 text-xl font-bold text-white">
 
@@ -125,7 +129,7 @@
 
             <div class="grid gap-4 md:grid-cols-3">
 
-                <a
+                
                     href="{{ route('admin.players.index') }}"
                     class="rounded-lg bg-slate-800 px-6 py-4 text-center font-semibold text-white hover:bg-slate-700">
 
@@ -133,7 +137,7 @@
 
                 </a>
 
-                <a
+                
                     href="{{ route('admin.cases.index') }}"
                     class="rounded-lg bg-slate-800 px-6 py-4 text-center font-semibold text-white hover:bg-slate-700">
 
@@ -141,7 +145,7 @@
 
                 </a>
 
-                <a
+                
                     href="{{ route('admin.dashboard') }}"
                     class="rounded-lg bg-slate-800 px-6 py-4 text-center font-semibold text-white hover:bg-slate-700">
 
@@ -155,7 +159,7 @@
 
         <div class="mt-10 flex items-center justify-end gap-4 border-t border-slate-800 pt-8">
 
-            <a
+            
                 href="{{ route('admin.players.edit',$player) }}"
                 class="rounded-lg border border-slate-700 bg-slate-900 px-8 py-3 font-semibold text-white hover:border-slate-500">
 

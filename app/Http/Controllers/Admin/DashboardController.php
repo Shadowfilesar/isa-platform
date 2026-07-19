@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\InvestigationCase;
 use App\Models\MissionCode;
-use App\Models\Player;
 
 class DashboardController extends Controller
 {
@@ -13,42 +12,23 @@ class DashboardController extends Controller
     {
         return view('admin.dashboard.index', [
 
-            /*
-            |--------------------------------------------------------------------------
-            | Statistics
-            |--------------------------------------------------------------------------
-            */
+            'totalCases' => InvestigationCase::query()
+                ->count(),
 
-            'totalPlayers' => Player::count(),
+            'totalMissionCodes' => MissionCode::query()
+                ->count(),
 
-            'activePlayers' => Player::where('is_active', true)->count(),
+            'usedMissionCodes' => MissionCode::query()
+                ->where('used', true)
+                ->count(),
 
-            'inactivePlayers' => Player::where('is_active', false)->count(),
+            'unusedMissionCodes' => MissionCode::query()
+                ->where('used', false)
+                ->count(),
 
-            'totalCases' => InvestigationCase::count(),
-
-            'publishedCases' => InvestigationCase::where('published', true)->count(),
-
-            'draftCases' => InvestigationCase::where('published', false)->count(),
-
-            'totalMissionCodes' => MissionCode::count(),
-
-            'usedMissionCodes' => MissionCode::where('used', true)->count(),
-
-            'unusedMissionCodes' => MissionCode::where('used', false)->count(),
-
-            /*
-            |--------------------------------------------------------------------------
-            | Recent Data
-            |--------------------------------------------------------------------------
-            */
-
-            'recentCases' => InvestigationCase::latest()
-                ->take(5)
-                ->get(),
-
-            'latestPlayers' => Player::latest()
-                ->take(5)
+            'recentCases' => InvestigationCase::query()
+                ->latest()
+                ->limit(5)
                 ->get(),
 
         ]);

@@ -31,9 +31,6 @@ return Application::configure(
         'auth.admin' =>
             \App\Http\Middleware\AuthenticateAdmin::class,
 
-        'guest.admin' =>
-        \App\Http\Middleware\RedirectIfAuthenticatedAdmin::class,
-
     ]);
 
 })

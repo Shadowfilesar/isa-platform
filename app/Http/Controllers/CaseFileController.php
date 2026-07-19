@@ -22,9 +22,6 @@ class CaseFileController extends Controller
     ) {
         $player = $request->attributes->get('player');
 
-        $adjacentFiles = $this->caseFileService
-            ->adjacentFiles($player, $case, $file);
-
         return view('dashboard.pages.file', [
 
             'player' => $player,
@@ -34,10 +31,6 @@ class CaseFileController extends Controller
 
             'file' => $this->caseFileService
                 ->playerFile($player, $case, $file),
-
-            'previousFile' => $adjacentFiles['previous'] ?? null,
-
-            'nextFile' => $adjacentFiles['next'] ?? null,
 
         ]);
     }

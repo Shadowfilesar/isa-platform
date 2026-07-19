@@ -33,7 +33,8 @@ class CaseFileService
                     $query
                         ->where('title', 'like', '%'.$search.'%')
                         ->orWhere('description', 'like', '%'.$search.'%')
-                        ->orWhere('section', 'like', '%'.$search.'%');
+                        ->orWhere('section', 'like', '%'.$search.'%')
+                        ->orWhere('file_type', 'like', '%'.$search.'%');
                 });
             })
             ->orderBy('section')
@@ -99,25 +100,5 @@ class CaseFileService
             ->where('locked', false)
             ->findOrFail($id);
 
-    }
-
-    public function adjacentFiles(
-        Player $player,
-        string $code,
-        int $id
-    ): array {
-        $files = $this
-            ->files($player, $code)
-            ->where('locked', false)
-            ->values();
-
-        $currentIndex = $files->search(function (CaseFile $file) use ($id) {
-            return $file->id === $id;
-        });
-
-        return [
-            'previous' => $currentIndex !== false ? $files->get($currentIndex - 1) : null,
-            'next' => $currentIndex !== false ? $files->get($currentIndex + 1) : null,
-        ];
     }
 }

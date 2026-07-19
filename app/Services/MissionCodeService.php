@@ -9,11 +9,6 @@ use Illuminate\Support\Facades\DB;
 
 class MissionCodeService
 {
-    public function __construct(
-        protected PlayerEventService $playerEventService
-    ) {
-    }
-
     public function redeem(Player $player, string $code): bool
     {
         return DB::transaction(function () use ($player, $code) {
@@ -23,7 +18,7 @@ class MissionCodeService
                 ->lockForUpdate()
                 ->first();
 
-            if (! $missionCode) {
+            if (!$missionCode) {
                 return false;
             }
 
@@ -52,14 +47,6 @@ class MissionCodeService
                 'activated_at' => now(),
 
             ]);
-
-            $this->playerEventService->missionUnlocked(
-
-                $player,
-
-                $missionCode->investigationCase
-
-            );
 
             return true;
 

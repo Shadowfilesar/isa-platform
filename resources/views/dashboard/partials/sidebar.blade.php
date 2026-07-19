@@ -14,67 +14,20 @@
 
     <nav class="p-6 space-y-2">
 
-        <a
-            href="{{ route('dashboard') }}"
-            class="block rounded-lg px-4 py-3 transition
-            {{ request()->routeIs('dashboard') ? 'bg-amber-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
-
-            🏠 Dashboard
-
+        <a href="{{ route('dashboard') }}"
+           class="block rounded-lg px-4 py-3 text-slate-300 hover:bg-slate-800">
+            Dashboard
         </a>
 
-        <a
-            href="{{ route('profile') }}"
-            class="block rounded-lg px-4 py-3 transition
-            {{ request()->routeIs('profile') ? 'bg-amber-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
-
-            👤 Profile
-
+        <a href="{{ route('profile') }}"
+           class="block rounded-lg px-4 py-3 text-slate-300 hover:bg-slate-800">
+            Profile
         </a>
 
-        <a
-            href="{{ route('cases.index') }}"
-            class="block rounded-lg px-4 py-3 transition
-            {{ request()->routeIs('cases.*') ? 'bg-amber-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
-
-            🗂️ Cases
-
+        <a href="{{ route('cases.index') }}"
+           class="block rounded-lg px-4 py-3 text-slate-300 hover:bg-slate-800">
+            Cases
         </a>
-
-        <a
-            href="{{ route('notifications.index') }}"
-            class="block rounded-lg px-4 py-3 transition
-            {{ request()->routeIs('notifications.*') ? 'bg-amber-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
-
-            🔔 Notifications
-
-        </a>
-
-        <a
-            href="{{ route('messages.index') }}"
-            class="block rounded-lg px-4 py-3 transition
-            {{ request()->routeIs('messages.*') ? 'bg-amber-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
-
-            📬 Director Inbox
-
-        </a>
-
-        <form
-            action="{{ route('logout') }}"
-            method="POST"
-            class="pt-6">
-
-            @csrf
-
-            <button
-                type="submit"
-                class="w-full rounded-lg bg-red-900 px-4 py-3 text-white transition hover:bg-red-800">
-
-                🚪 Logout
-
-            </button>
-
-        </form>
 
     </nav>
 

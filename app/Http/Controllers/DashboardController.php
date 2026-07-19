@@ -43,12 +43,10 @@ class DashboardController extends Controller
             $request->code
         );
 
-        if (!$success) {
-
+        if (! $success) {
             return back()->withErrors([
                 'code' => 'Invalid mission code.',
             ]);
-
         }
 
         return redirect()

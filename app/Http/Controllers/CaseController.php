@@ -2,86 +2,128 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\InvestigationCase;
-use App\Services\InvestigationBoardService;
+use App\Services\CaseFileService;
+use App\Services\CaseService;
 use Illuminate\Http\Request;
 
 class CaseController extends Controller
 {
     public function __construct(
-        private readonly InvestigationBoardService $investigationBoardService
+        protected CaseService $caseService,
+        protected CaseFileService $caseFileService
     ) {
     }
 
+    /**
+     * Cases List
+     */
     public function index(Request $request)
     {
         $player = $request->attributes->get('player');
 
-        $cases = $player->cases()
-            ->withPivot(['status', 'started_at', 'completed_at'])
-            ->latest()
-            ->get();
-
         return view('dashboard.pages.cases', [
             'player' => $player,
-            'cases' => $cases,
+            'cases'  => $this->caseService->playerCases($player),
         ]);
     }
 
-    public function show(Request $request, InvestigationCase $case)
+    /**
+     * Case Page
+     */
+    public function show(Request $request, string $code)
     {
+        $validated = $request->validate([
+
+            'search' => ['nullable','string','max:255'],
+
+        ]);
+
         $player = $request->attributes->get('player');
 
-        abort_unless(
-            $player && $player->cases()->whereKey($case->getKey())->exists(),
-            404
-        );
-
-        $section = $request->string('section')->toString();
-        $section = $section !== '' ? $section : 'Overview';
-
-        $files = $case->files()
-            ->orderBy('display_order')
-            ->orderBy('id')
-            ->get();
-
-        $sectionedFiles = $files->groupBy(function ($file) {
-            return $file->section ?: 'Evidence';
-        });
-
-        $visibleFiles = $section === 'Overview'
-            ? $files
-            : $sectionedFiles->get($section, collect());
-
-        $stats = [
-            'totalFiles' => $files->count(),
-            'lockedFiles' => $files->where('locked', true)->count(),
-            'unlockedFiles' => $files->where('locked', false)->count(),
-            'totalSections' => $sectionedFiles->keys()->count(),
-            'lastUpdated' => $files->max('updated_at'),
-        ];
-
-        $progress = $stats['totalFiles'] > 0
-            ? (int) round(($stats['unlockedFiles'] / $stats['totalFiles']) * 100)
-            : 0;
-
-        $boardWorkspace = $this->investigationBoardService->buildBoardWorkspaceViewData(
+        $case = $this->caseService->playerCase(
             $player,
-            $case,
-            $section
+            $code
         );
 
-        return view('dashboard.pages.case', array_merge([
-            'player' => $player,
-            'playerId' => $player->id,
-            'case' => $case,
-            'section' => $section,
-            'activeSection' => $section,
-            'files' => $visibleFiles,
-            'filesCollection' => $visibleFiles,
-            'evidenceFiles' => $boardWorkspace['evidenceFiles'] ?? collect(),
-            'stats' => $stats,
-            'progress' => $progress,
-        ], $boardWorkspace));
+        $search = $validated['search'] ?? null;
+
+        return view('dashboard.pages.case', [
+            'player'   => $player,
+            'case'     => $case,
+            'search'   => $search,
+            'stats'    => $this->caseFileService->contentStats(
+                $player,
+                $code
+            ),
+            'sections' => $this->caseFileService->groupedFiles(
+                $player,
+                $code,
+                $search
+            ),
+        ]);
+    }
+
+    /**
+     * Reports
+     */
+    public function reports(Request $request, string $code)
+    {
+        return $this->show($request, $code);
+    }
+
+    /**
+     * Evidence
+     */
+    public function evidence(Request $request, string $code)
+    {
+        return $this->show($request, $code);
+    }
+
+    /**
+     * Witnesses
+     */
+    public function witnesses(Request $request, string $code)
+    {
+        return $this->show($request, $code);
+    }
+
+    /**
+     * Suspects
+     */
+    public function suspects(Request $request, string $code)
+    {
+        return $this->show($request, $code);
+    }
+
+    /**
+     * Documents
+     */
+    public function documents(Request $request, string $code)
+    {
+        return $this->show($request, $code);
+    }
+
+    /**
+     * Timeline
+     */
+    public function timeline(Request $request, string $code)
+    {
+        return $this->show($request, $code);
+    }
+
+    /**
+     * Notes
+     */
+    public function notes(Request $request, string $code)
+    {
+        return $this->show($request, $code);
+    }
+
+    /**
+     * Submit Report
+     */
+    public function submitReport(Request $request, string $code)
+    {
+        return $this->show($request, $code);
     }
 }

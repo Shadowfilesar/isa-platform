@@ -4,44 +4,55 @@ namespace App\Services;
 
 use App\Models\InvestigationCase;
 use App\Models\Player;
-use Illuminate\Database\Eloquent\Collection;
 
 class CaseService
 {
-    public function __construct(
-        private readonly CaseWorkspaceViewService $caseWorkspaceViewService
-    ) {
-    }
-
-    public function getPlayerCases(Player $player): Collection
+    /**
+     * جميع قضايا اللاعب
+     */
+    public function playerCases(Player $player)
     {
         return $player->cases()
-            ->withCount('files')
-            ->latest()
+
+            ->where('published', true)
+
+            ->orderBy('title')
+
             ->get();
     }
 
-    public function getCaseForPlayer(
+    /**
+     * قضية واحدة
+     */
+    public function playerCase(
         Player $player,
-        InvestigationCase $case
+        string $code
     ): InvestigationCase {
-        abort_unless(
-            $player->cases()->where('cases.id', $case->id)->exists(),
-            404
-        );
 
-        return $case->load([
-            'files' => function ($query) {
-                $query->orderBy('section')
-                    ->orderBy('display_order');
-            },
-        ]);
+        return $player->cases()
+
+            ->where('code', $code)
+
+            ->where('published', true)
+
+            ->firstOrFail();
+
     }
 
-    public function buildCaseWorkspaceData(
-        InvestigationCase $case,
-        string $section
-    ): array {
-        return $this->caseWorkspaceViewService->build($case, $section);
+    /**
+     * ملفات القضية
+     */
+    public function files(
+        InvestigationCase $case
+    ) {
+
+        return $case->files()
+
+            ->where('published', true)
+
+            ->orderBy('sort_order')
+
+            ->get();
+
     }
 }

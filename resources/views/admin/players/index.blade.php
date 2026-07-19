@@ -1,4 +1,7 @@
-@extends('layouts.admin')
+<?php
+// resources/views/admin/players/index.blade.php
+?>
+@extends('layouts.app')
 
 @section('title','Players')
 
@@ -10,7 +13,7 @@
 
         <div>
 
-            <a
+            
                 href="{{ route('admin.dashboard') }}"
                 class="inline-flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-900 px-5 py-3 text-white hover:border-amber-500">
 
@@ -50,13 +53,48 @@
 
         </div>
 
-        <a
+        
             href="{{ route('admin.players.create') }}"
             class="rounded-lg bg-amber-600 px-6 py-3 font-semibold text-white hover:bg-amber-500">
 
             + Create Player
 
         </a>
+
+    </div>
+
+    <div class="mb-6">
+
+        <form method="GET" action="{{ route('admin.players.index') }}" class="flex gap-3">
+
+            <input
+                type="text"
+                name="search"
+                value="{{ $search }}"
+                placeholder="Search by account code or rank..."
+                class="w-full max-w-md rounded-lg border border-slate-700 bg-slate-900 px-4 py-3 text-white focus:border-amber-500 focus:outline-none">
+
+            <button
+                type="submit"
+                class="rounded-lg bg-amber-600 px-6 py-3 font-semibold text-white hover:bg-amber-500">
+
+                Search
+
+            </button>
+
+            @if($search !== '')
+
+                
+                    href="{{ route('admin.players.index') }}"
+                    class="rounded-lg border border-slate-700 bg-slate-900 px-6 py-3 font-semibold text-white hover:border-slate-500">
+
+                    Clear
+
+                </a>
+
+            @endif
+
+        </form>
 
     </div>
 
@@ -123,7 +161,7 @@
 
                         <div class="mt-1 text-sm text-slate-500">
 
-                           {{ optional($player->created_at)->format('Y-m-d') ?? '-' }}
+                           {{ optional($player->last_login)->format('Y-m-d H:i') ?? '-' }}
 
                         </div>
 
@@ -153,11 +191,11 @@
 
                     <td class="p-4">
 
-                        @if($player->is_active)
+                        @if($player->password !== null)
 
                             <span class="rounded-full bg-green-900 px-3 py-1 text-sm text-green-300">
 
-                                Active
+                                Activated
 
                             </span>
 
@@ -165,7 +203,7 @@
 
                             <span class="rounded-full bg-red-900 px-3 py-1 text-sm text-red-300">
 
-                                Suspended
+                                Not Activated
 
                             </span>
 
@@ -177,7 +215,7 @@
 
                         <div class="flex justify-end gap-3">
 
-                            <a
+                            
                                 href="{{ route('admin.players.edit',$player) }}"
                                 class="rounded-lg bg-amber-600 px-4 py-2 text-white hover:bg-amber-500">
 
@@ -185,7 +223,7 @@
 
                             </a>
 
-                            <a
+                            
                                 href="{{ route('admin.players.assign-cases',$player) }}"
                                 class="rounded-lg bg-blue-700 px-4 py-2 text-white hover:bg-blue-600">
 

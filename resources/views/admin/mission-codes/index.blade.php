@@ -1,4 +1,7 @@
-@extends('layouts.admin')
+<?php
+// resources/views/admin/mission-codes/index.blade.php
+?>
+@extends('layouts.app')
 
 @section('title','Mission Codes')
 
