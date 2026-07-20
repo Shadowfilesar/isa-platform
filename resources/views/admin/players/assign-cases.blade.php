@@ -1,51 +1,19 @@
 <?php
 // resources/views/admin/players/assign-cases.blade.php
 ?>
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('title','Assign Cases')
 
-@section('content')
+@php
+    $breadcrumbs = [
+        ['route' => 'admin.players.index', 'label' => 'Players'],
+        ['route' => 'admin.players.edit', 'params' => $player, 'label' => $player->account_code],
+        ['label' => 'Assign Cases'],
+    ];
+@endphp
 
-<div class="p-10">
-
-    <div class="mb-8">
-
-        
-            href="{{ route('admin.players.edit',$player) }}"
-            class="inline-flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-900 px-5 py-3 text-white hover:border-amber-500">
-
-            ← Back to Player
-
-        </a>
-
-        <div class="mt-5 text-sm text-slate-500">
-
-            <a href="{{ route('admin.dashboard') }}" class="hover:text-white">
-
-                Dashboard
-
-            </a>
-
-            <span class="mx-2">/</span>
-
-            <a href="{{ route('admin.players.index') }}" class="hover:text-white">
-
-                Players
-
-            </a>
-
-            <span class="mx-2">/</span>
-
-            <span class="text-amber-400">
-
-                Assign Cases
-
-            </span>
-
-        </div>
-
-    </div>
+@section('admin-content')
 
     <div class="mb-10">
 
@@ -119,44 +87,6 @@
 
         </div>
 
-        <div class="border-t border-slate-800 pt-8">
-
-            <h2 class="mb-6 text-xl font-bold text-white">
-
-                Quick Actions
-
-            </h2>
-
-            <div class="grid gap-4 md:grid-cols-3">
-
-                
-                    href="{{ route('admin.players.index') }}"
-                    class="rounded-lg bg-slate-800 px-6 py-4 text-center font-semibold text-white hover:bg-slate-700">
-
-                    👥 All Players
-
-                </a>
-
-                
-                    href="{{ route('admin.cases.index') }}"
-                    class="rounded-lg bg-slate-800 px-6 py-4 text-center font-semibold text-white hover:bg-slate-700">
-
-                    📂 All Cases
-
-                </a>
-
-                
-                    href="{{ route('admin.dashboard') }}"
-                    class="rounded-lg bg-slate-800 px-6 py-4 text-center font-semibold text-white hover:bg-slate-700">
-
-                    🏠 Dashboard
-
-                </a>
-
-            </div>
-
-        </div>
-
         <div class="mt-10 flex items-center justify-end gap-4 border-t border-slate-800 pt-8">
 
             
@@ -178,7 +108,5 @@
         </div>
 
     </form>
-
-</div>
 
 @endsection

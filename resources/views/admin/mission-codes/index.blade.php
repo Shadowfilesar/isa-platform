@@ -1,13 +1,17 @@
 <?php
 // resources/views/admin/mission-codes/index.blade.php
 ?>
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('title','Mission Codes')
 
-@section('content')
+@php
+    $breadcrumbs = [
+        ['label' => 'Mission Codes'],
+    ];
+@endphp
 
-<div class="p-10">
+@section('admin-content')
 
     <div class="flex justify-between items-center mb-8">
 
@@ -26,14 +30,6 @@
             </p>
 
         </div>
-
-        <a
-            href="{{ route('admin.dashboard') }}"
-            class="rounded bg-slate-800 px-6 py-3 text-white">
-
-            Back
-
-        </a>
 
     </div>
 
@@ -186,7 +182,7 @@
 
                 </button>
 
-                <a
+                
                     href="{{ route('admin.mission-codes.export',$filters) }}"
                     class="rounded bg-slate-800 px-5 py-3 text-white">
 
@@ -346,7 +342,5 @@
         {{ $missionCodes->links() }}
 
     </div>
-
-</div>
 
 @endsection

@@ -1,10 +1,15 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('title','Edit Case')
 
-@section('content')
+@php
+    $breadcrumbs = [
+        ['route' => 'admin.cases.index', 'label' => 'Cases'],
+        ['label' => 'Edit Investigation'],
+    ];
+@endphp
 
-<div class="p-10">
+@section('admin-content')
 
 <h1 class="text-4xl text-white mb-8">
 
@@ -87,7 +92,5 @@ Update Case
 </button>
 
 </form>
-
-</div>
 
 @endsection

@@ -1,45 +1,18 @@
 <?php
 // resources/views/admin/players/edit.blade.php
 ?>
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('title','Edit Player')
 
-@section('content')
+@php
+    $breadcrumbs = [
+        ['route' => 'admin.players.index', 'label' => 'Players'],
+        ['label' => 'Edit Player'],
+    ];
+@endphp
 
-<div class="p-10">
-
-    <div class="mb-8">
-
-        
-            href="{{ route('admin.players.index') }}"
-            class="inline-flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-900 px-5 py-3 text-white hover:border-amber-500">
-
-            ← Back to Players
-
-        </a>
-
-        <div class="mt-5 text-sm text-slate-500">
-
-            <a href="{{ route('admin.dashboard') }}" class="hover:text-white">
-                Dashboard
-            </a>
-
-            <span class="mx-2">/</span>
-
-            <a href="{{ route('admin.players.index') }}" class="hover:text-white">
-                Players
-            </a>
-
-            <span class="mx-2">/</span>
-
-            <span class="text-amber-400">
-                Edit Player
-            </span>
-
-        </div>
-
-    </div>
+@section('admin-content')
 
     <div class="mb-10">
 
@@ -55,20 +28,6 @@
         </p>
 
     </div>
-
-    @if ($errors->any())
-
-        <div class="mb-8 rounded-lg border border-red-700 bg-red-900/40 px-5 py-4 text-red-300">
-
-            <ul class="space-y-1">
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-
-        </div>
-
-    @endif
 
     <form
         method="POST"
@@ -128,7 +87,22 @@
                     class="w-full rounded-lg border border-slate-700 bg-slate-900 px-4 py-3 text-white focus:border-amber-500 focus:outline-none">
             </div>
 
-            <div class="md:col-span-2">
+            <div>
+                <label for="status" class="mb-2 block text-sm font-semibold text-slate-300">
+                    Status
+                </label>
+                <select
+                    id="status"
+                    name="status"
+                    class="w-full rounded-lg border border-slate-700 bg-slate-900 px-4 py-3 text-white focus:border-amber-500 focus:outline-none">
+
+                    <option value="active" {{ old('status', $player->status) === 'active' ? 'selected' : '' }}>Active</option>
+                    <option value="inactive" {{ old('status', $player->status) === 'inactive' ? 'selected' : '' }}>Inactive</option>
+
+                </select>
+            </div>
+
+            <div>
                 <label for="password" class="mb-2 block text-sm font-semibold text-slate-300">
                     Password
                 </label>
@@ -171,7 +145,5 @@
         </div>
 
     </form>
-
-</div>
 
 @endsection

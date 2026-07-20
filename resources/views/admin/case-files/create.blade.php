@@ -1,10 +1,16 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('title','Upload File')
 
-@section('content')
+@php
+    $breadcrumbs = [
+        ['route' => 'admin.cases.index', 'label' => 'Cases'],
+        ['route' => 'admin.case-files.index', 'params' => $case, 'label' => $case->code.' Files'],
+        ['label' => 'Upload File'],
+    ];
+@endphp
 
-<div class="p-10">
+@section('admin-content')
 
     <div class="flex justify-between items-center mb-8">
 
@@ -23,14 +29,6 @@
             </p>
 
         </div>
-
-        <a
-            href="{{ route('admin.case-files.index',$case) }}"
-            class="rounded bg-slate-800 px-6 py-3 text-white">
-
-            Back
-
-        </a>
 
     </div>
 
@@ -184,7 +182,5 @@
         </button>
 
     </form>
-
-</div>
 
 @endsection

@@ -1,10 +1,14 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('title','Investigation Cases')
 
-@section('content')
+@php
+    $breadcrumbs = [
+        ['label' => 'Cases'],
+    ];
+@endphp
 
-<div class="p-10">
+@section('admin-content')
 
     <div class="flex justify-between items-center mb-8">
 
@@ -24,7 +28,7 @@
 
         </div>
 
-        <a
+        
             href="{{ route('admin.cases.create') }}"
             class="rounded-lg bg-amber-600 hover:bg-amber-500 px-6 py-3 text-white">
 
@@ -102,7 +106,7 @@
 
                         <div class="flex justify-end gap-3">
 
-                            <a
+                            
 
                                 href="{{ route('admin.case-files.index',$case) }}"
 
@@ -112,7 +116,7 @@
 
                             </a>
 
-                            <a
+                            
 
                                 href="{{ route('admin.cases.edit',$case) }}"
 
@@ -174,7 +178,5 @@
         {{ $cases->links() }}
 
     </div>
-
-</div>
 
 @endsection

@@ -1,45 +1,23 @@
 <?php
 // resources/views/admin/players/index.blade.php
 ?>
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('title','Players')
 
-@section('content')
+@php
+    $breadcrumbs = [
+        ['label' => 'Players'],
+    ];
+@endphp
 
-<div class="p-10">
+@section('admin-content')
 
     <div class="mb-8 flex items-center justify-between">
 
         <div>
 
-            
-                href="{{ route('admin.dashboard') }}"
-                class="inline-flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-900 px-5 py-3 text-white hover:border-amber-500">
-
-                ← Dashboard
-
-            </a>
-
-            <div class="mt-5 text-sm text-slate-500">
-
-                <a href="{{ route('admin.dashboard') }}" class="hover:text-white">
-
-                    Dashboard
-
-                </a>
-
-                <span class="mx-2">/</span>
-
-                <span class="text-amber-400">
-
-                    Players
-
-                </span>
-
-            </div>
-
-            <h1 class="mt-6 text-4xl font-bold text-white">
+            <h1 class="text-4xl font-bold text-white">
 
                 Player Management
 
@@ -53,19 +31,91 @@
 
         </div>
 
-        
-            href="{{ route('admin.players.create') }}"
-            class="rounded-lg bg-amber-600 px-6 py-3 font-semibold text-white hover:bg-amber-500">
+        <div class="flex gap-3">
 
-            + Create Player
+            
+                href="{{ route('admin.players.create') }}"
+                class="rounded-lg bg-amber-600 px-6 py-3 font-semibold text-white hover:bg-amber-500">
 
-        </a>
+                + Create Player
+
+            </a>
+
+        </div>
+
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
+
+        <div class="executive-card executive-glow p-6">
+
+            <p class="text-slate-500">
+
+                Total Players
+
+            </p>
+
+            <div class="text-4xl font-bold text-white mt-3">
+
+                {{ $totalPlayers }}
+
+            </div>
+
+        </div>
+
+        <div class="executive-card executive-glow p-6">
+
+            <p class="text-slate-500">
+
+                Active Players
+
+            </p>
+
+            <div class="text-4xl font-bold text-green-400 mt-3">
+
+                {{ $activePlayers }}
+
+            </div>
+
+        </div>
+
+        <div class="executive-card executive-glow p-6">
+
+            <p class="text-slate-500">
+
+                Inactive Players
+
+            </p>
+
+            <div class="text-4xl font-bold text-red-400 mt-3">
+
+                {{ $inactivePlayers }}
+
+            </div>
+
+        </div>
+
+        <div class="executive-card executive-glow p-6">
+
+            <p class="text-slate-500">
+
+                Total Assigned Cases
+
+            </p>
+
+            <div class="text-4xl font-bold text-white mt-3">
+
+                {{ $totalAssignedCases }}
+
+            </div>
+
+        </div>
 
     </div>
 
     <div class="mb-6">
 
-        <form method="GET" action="{{ route('admin.players.index') }}" class="flex gap-3">
+        <form method="GET" action="{{ route('admin.players.index') }}" class="flex flex-wrap gap-3">
 
             <input
                 type="text"
@@ -74,15 +124,25 @@
                 placeholder="Search by account code or rank..."
                 class="w-full max-w-md rounded-lg border border-slate-700 bg-slate-900 px-4 py-3 text-white focus:border-amber-500 focus:outline-none">
 
+            <select
+                name="status"
+                class="rounded-lg border border-slate-700 bg-slate-900 px-4 py-3 text-white focus:border-amber-500 focus:outline-none">
+
+                <option value="" {{ $status === '' ? 'selected' : '' }}>All Statuses</option>
+                <option value="active" {{ $status === 'active' ? 'selected' : '' }}>Active</option>
+                <option value="inactive" {{ $status === 'inactive' ? 'selected' : '' }}>Inactive</option>
+
+            </select>
+
             <button
                 type="submit"
                 class="rounded-lg bg-amber-600 px-6 py-3 font-semibold text-white hover:bg-amber-500">
 
-                Search
+                Filter
 
             </button>
 
-            @if($search !== '')
+            @if($search !== '' || $status !== '')
 
                 
                     href="{{ route('admin.players.index') }}"
@@ -108,7 +168,7 @@
 
                     <th class="p-4 text-left">
 
-                        Account
+                        Account Code
 
                     </th>
 
@@ -136,6 +196,18 @@
 
                     </th>
 
+                    <th class="p-4 text-left">
+
+                        Last Login
+
+                    </th>
+
+                    <th class="p-4 text-left">
+
+                        Assigned Cases
+
+                    </th>
+
                     <th class="p-4 text-right">
 
                         Actions
@@ -149,7 +221,8 @@
             <tbody>
 
             @forelse($players as $player)
-                            <tr class="border-t border-slate-800 hover:bg-slate-900/40">
+
+                <tr class="border-t border-slate-800 hover:bg-slate-900/40">
 
                     <td class="p-4">
 
@@ -159,9 +232,17 @@
 
                         </div>
 
-                        <div class="mt-1 text-sm text-slate-500">
+                        <div class="mt-1 text-xs text-slate-500">
 
-                           {{ optional($player->last_login)->format('Y-m-d H:i') ?? '-' }}
+                            @if($player->isActivated())
+
+                                Password Set
+
+                            @else
+
+                                Not Activated
+
+                            @endif
 
                         </div>
 
@@ -191,11 +272,11 @@
 
                     <td class="p-4">
 
-                        @if($player->password !== null)
+                        @if($player->status === 'active')
 
                             <span class="rounded-full bg-green-900 px-3 py-1 text-sm text-green-300">
 
-                                Activated
+                                Active
 
                             </span>
 
@@ -203,7 +284,7 @@
 
                             <span class="rounded-full bg-red-900 px-3 py-1 text-sm text-red-300">
 
-                                Not Activated
+                                Inactive
 
                             </span>
 
@@ -211,9 +292,21 @@
 
                     </td>
 
+                    <td class="p-4 text-sm text-slate-400">
+
+                        {{ optional($player->last_login)->format('Y-m-d H:i') ?? '-' }}
+
+                    </td>
+
+                    <td class="p-4 font-semibold text-white">
+
+                        {{ $player->cases_count }}
+
+                    </td>
+
                     <td class="p-4">
 
-                        <div class="flex justify-end gap-3">
+                        <div class="flex flex-wrap justify-end gap-3">
 
                             
                                 href="{{ route('admin.players.edit',$player) }}"
@@ -230,6 +323,24 @@
                                 Cases
 
                             </a>
+
+                            <form
+                                action="{{ route('admin.players.toggle-status',$player) }}"
+                                method="POST"
+                                onsubmit="return confirm('{{ $player->status === 'active' ? 'Deactivate' : 'Activate' }} this player?')">
+
+                                @csrf
+                                @method('PATCH')
+
+                                <button
+                                    type="submit"
+                                    class="rounded-lg {{ $player->status === 'active' ? 'bg-slate-700 hover:bg-slate-600' : 'bg-green-700 hover:bg-green-600' }} px-4 py-2 text-white">
+
+                                    {{ $player->status === 'active' ? 'Deactivate' : 'Activate' }}
+
+                                </button>
+
+                            </form>
 
                             <form
                                 action="{{ route('admin.players.destroy',$player) }}"
@@ -260,7 +371,7 @@
                 <tr>
 
                     <td
-                        colspan="6"
+                        colspan="8"
                         class="py-16 text-center text-slate-500">
 
                         No players found.
@@ -282,7 +393,5 @@
         {{ $players->links() }}
 
     </div>
-
-</div>
 
 @endsection
