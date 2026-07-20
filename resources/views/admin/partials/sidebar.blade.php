@@ -5,7 +5,7 @@
 
     <nav class="flex-1 space-y-2 px-4 py-6">
 
-        
+        <a
             href="{{ route('admin.dashboard') }}"
             class="block rounded-lg px-4 py-3 font-semibold {{ request()->routeIs('admin.dashboard') ? 'bg-amber-600 text-white' : 'text-slate-300 hover:bg-slate-900 hover:text-white' }}">
 
@@ -13,7 +13,7 @@
 
         </a>
 
-        
+        <a
             href="{{ route('admin.players.index') }}"
             class="block rounded-lg px-4 py-3 font-semibold {{ request()->routeIs('admin.players.*') ? 'bg-amber-600 text-white' : 'text-slate-300 hover:bg-slate-900 hover:text-white' }}">
 
@@ -21,7 +21,7 @@
 
         </a>
 
-        
+        <a
             href="{{ route('admin.cases.index') }}"
             class="block rounded-lg px-4 py-3 font-semibold {{ request()->routeIs('admin.cases.*') || request()->routeIs('admin.case-files.*') ? 'bg-amber-600 text-white' : 'text-slate-300 hover:bg-slate-900 hover:text-white' }}">
 
@@ -29,7 +29,7 @@
 
         </a>
 
-        
+        <a
             href="{{ route('admin.mission-codes.index') }}"
             class="block rounded-lg px-4 py-3 font-semibold {{ request()->routeIs('admin.mission-codes.*') ? 'bg-amber-600 text-white' : 'text-slate-300 hover:bg-slate-900 hover:text-white' }}">
 

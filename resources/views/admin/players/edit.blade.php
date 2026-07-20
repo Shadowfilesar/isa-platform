@@ -88,18 +88,12 @@
             </div>
 
             <div>
-                <label for="status" class="mb-2 block text-sm font-semibold text-slate-300">
+                <label class="mb-2 block text-sm font-semibold text-slate-300">
                     Status
                 </label>
-                <select
-                    id="status"
-                    name="status"
-                    class="w-full rounded-lg border border-slate-700 bg-slate-900 px-4 py-3 text-white focus:border-amber-500 focus:outline-none">
-
-                    <option value="active" {{ old('status', $player->status) === 'active' ? 'selected' : '' }}>Active</option>
-                    <option value="inactive" {{ old('status', $player->status) === 'inactive' ? 'selected' : '' }}>Inactive</option>
-
-                </select>
+                <div class="w-full rounded-lg border border-slate-700 bg-slate-900 px-4 py-3 text-white">
+                    {{ $player->isActivated() ? 'Active' : 'Inactive' }}
+                </div>
             </div>
 
             <div>
@@ -118,7 +112,7 @@
 
         <div class="mt-10 flex flex-wrap items-center justify-end gap-4 border-t border-slate-800 pt-8">
 
-            
+            <a
                 href="{{ route('admin.players.assign-cases', $player) }}"
                 class="rounded-lg border border-slate-700 bg-slate-900 px-8 py-3 font-semibold text-white hover:border-amber-500">
 
@@ -126,7 +120,7 @@
 
             </a>
 
-            
+            <a
                 href="{{ route('admin.players.index') }}"
                 class="rounded-lg border border-slate-700 bg-slate-900 px-8 py-3 font-semibold text-white hover:border-slate-500">
 

@@ -24,7 +24,7 @@
 
         <div class="flex gap-3">
 
-            
+            <a
                 href="{{ route('admin.cases.create') }}"
                 class="rounded bg-amber-600 px-6 py-3 text-white">
 
@@ -32,7 +32,7 @@
 
             </a>
 
-            
+            <a
                 href="{{ route('admin.mission-codes.index') }}"
                 class="rounded bg-slate-800 px-6 py-3 text-white">
 
@@ -192,7 +192,7 @@
 
                             <div class="flex justify-end gap-3">
 
-                                
+                                <a
                                     href="{{ route('admin.case-files.index',$case) }}"
                                     class="rounded bg-slate-800 px-4 py-2 text-white">
 
@@ -200,7 +200,7 @@
 
                                 </a>
 
-                                
+                                <a
                                     href="{{ route('admin.cases.edit',$case) }}"
                                     class="rounded bg-amber-600 px-4 py-2 text-white">
 
@@ -244,7 +244,7 @@
 
             <div class="space-y-4">
 
-                
+                <a
                     href="{{ route('admin.cases.create') }}"
                     class="block rounded bg-amber-600 px-5 py-4 text-center font-semibold text-white">
 
@@ -252,7 +252,7 @@
 
                 </a>
 
-                
+                <a
                     href="{{ route('admin.mission-codes.index') }}"
                     class="block rounded bg-slate-800 px-5 py-4 text-center font-semibold text-white">
 

@@ -165,7 +165,7 @@
 
             </label>
 
-            
+            <a
                 href="{{ asset($file->file_path) }}"
                 target="_blank"
                 class="text-amber-400">

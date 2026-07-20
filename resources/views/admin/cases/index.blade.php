@@ -28,7 +28,7 @@
 
         </div>
 
-        
+        <a
             href="{{ route('admin.cases.create') }}"
             class="rounded-lg bg-amber-600 hover:bg-amber-500 px-6 py-3 text-white">
 
@@ -107,7 +107,7 @@
                         <div class="flex justify-end gap-3">
 
                             
-
+                            <a
                                 href="{{ route('admin.case-files.index',$case) }}"
 
                                 class="rounded bg-slate-800 px-4 py-2 text-white">
@@ -117,7 +117,7 @@
                             </a>
 
                             
-
+                            <a
                                 href="{{ route('admin.cases.edit',$case) }}"
 
                                 class="rounded bg-amber-600 px-4 py-2 text-white">

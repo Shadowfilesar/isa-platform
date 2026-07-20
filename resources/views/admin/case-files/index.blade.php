@@ -31,7 +31,7 @@
 
         <div class="flex gap-3">
 
-            
+            <a
                 href="{{ route('admin.case-files.create',$case) }}"
                 class="rounded bg-amber-600 px-6 py-3 text-white">
 
@@ -218,7 +218,7 @@
 
                         <div class="flex justify-end gap-3">
 
-                            
+                            <a
                                 href="{{ asset($file->file_path) }}"
                                 target="_blank"
                                 class="rounded bg-slate-800 px-4 py-2 text-white">
@@ -244,7 +244,7 @@
 
                             </form>
 
-                            
+                            <a
                                 href="{{ route('admin.case-files.edit',[$case,$file]) }}"
                                 class="rounded bg-amber-600 px-4 py-2 text-white">
 

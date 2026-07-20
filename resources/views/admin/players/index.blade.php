@@ -33,7 +33,7 @@
 
         <div class="flex gap-3">
 
-            
+            <a
                 href="{{ route('admin.players.create') }}"
                 class="rounded-lg bg-amber-600 px-6 py-3 font-semibold text-white hover:bg-amber-500">
 
@@ -144,7 +144,7 @@
 
             @if($search !== '' || $status !== '')
 
-                
+                <a
                     href="{{ route('admin.players.index') }}"
                     class="rounded-lg border border-slate-700 bg-slate-900 px-6 py-3 font-semibold text-white hover:border-slate-500">
 
@@ -272,7 +272,7 @@
 
                     <td class="p-4">
 
-                        @if($player->status === 'active')
+                        @if($player->isActivated())
 
                             <span class="rounded-full bg-green-900 px-3 py-1 text-sm text-green-300">
 
@@ -308,7 +308,7 @@
 
                         <div class="flex flex-wrap justify-end gap-3">
 
-                            
+                            <a
                                 href="{{ route('admin.players.edit',$player) }}"
                                 class="rounded-lg bg-amber-600 px-4 py-2 text-white hover:bg-amber-500">
 
@@ -316,31 +316,13 @@
 
                             </a>
 
-                            
+                            <a
                                 href="{{ route('admin.players.assign-cases',$player) }}"
                                 class="rounded-lg bg-blue-700 px-4 py-2 text-white hover:bg-blue-600">
 
                                 Cases
 
                             </a>
-
-                            <form
-                                action="{{ route('admin.players.toggle-status',$player) }}"
-                                method="POST"
-                                onsubmit="return confirm('{{ $player->status === 'active' ? 'Deactivate' : 'Activate' }} this player?')">
-
-                                @csrf
-                                @method('PATCH')
-
-                                <button
-                                    type="submit"
-                                    class="rounded-lg {{ $player->status === 'active' ? 'bg-slate-700 hover:bg-slate-600' : 'bg-green-700 hover:bg-green-600' }} px-4 py-2 text-white">
-
-                                    {{ $player->status === 'active' ? 'Deactivate' : 'Activate' }}
-
-                                </button>
-
-                            </form>
 
                             <form
                                 action="{{ route('admin.players.destroy',$player) }}"
