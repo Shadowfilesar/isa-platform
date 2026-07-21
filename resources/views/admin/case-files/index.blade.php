@@ -2,298 +2,70 @@
 
 @section('title','Case Files')
 
+@section('content')
+
 @php
     $breadcrumbs = [
-        ['route' => 'admin.cases.index', 'label' => 'Cases'],
-        ['label' => $case->code.' Files'],
+        ['label' => 'Dashboard', 'href' => route('admin.dashboard')],
+        ['label' => 'Cases', 'href' => route('admin.cases.index')],
+        ['label' => $case->code . ' Files'],
     ];
 @endphp
 
-@section('admin-content')
+<div class="p-10 admin-page-stack">
+    <x-admin.breadcrumbs :items="$breadcrumbs" />
 
-    <div class="flex justify-between items-center mb-8">
+    <x-admin.action-toolbar
+        :title="$case->title"
+        :subtitle="$case->code . ' / File Manager'">
+        <x-slot:actions>
+            <x-admin.icon-button
+                :href="route('admin.cases.index')"
+                label="Back"
+                icon="←"
+                variant="neutral" />
 
-        <div>
+            <x-admin.icon-button
+                :href="route('admin.case-files.create',$case)"
+                label="Upload File"
+                icon="+"
+                variant="accent" />
+        </x-slot:actions>
+    </x-admin.action-toolbar>
 
-            <h1 class="text-4xl font-bold text-white">
+    <x-admin.search-bar
+        :action="route('admin.case-files.index',$case)"
+        placeholder="Search files by title, category or metadata" />
 
-                {{ $case->title }}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <x-admin.filter-chip-group
+            title="Sections"
+            :items="$sections"
+            empty="No sections yet." />
 
-            </h1>
-
-            <p class="text-slate-500 mt-2">
-
-                {{ $case->code }} / File Manager
-
-            </p>
-
-        </div>
-
-        <div class="flex gap-3">
-
-            <a
-                href="{{ route('admin.case-files.create',$case) }}"
-                class="rounded bg-amber-600 px-6 py-3 text-white">
-
-                + Upload File
-
-            </a>
-
-        </div>
-
+        <x-admin.filter-chip-group
+            title="Categories"
+            :items="$categories"
+            empty="No categories yet." />
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-
-        <div class="executive-card p-6">
-
-            <h2 class="text-xl font-bold text-white mb-4">
-
-                Sections
-
-            </h2>
-
-            <div class="flex flex-wrap gap-2">
-
-                @forelse($sections as $section)
-
-                    <span class="rounded bg-slate-800 px-3 py-2 text-sm text-slate-200">
-
-                        {{ $section }}
-
-                    </span>
-
-                @empty
-
-                    <span class="text-slate-500">
-
-                        No sections yet.
-
-                    </span>
-
-                @endforelse
-
-            </div>
-
+    @if($files->isEmpty())
+        <x-admin.empty-state
+            title="No files uploaded yet"
+            message="This case does not contain any file records yet. Upload the first file to begin organizing mission content.">
+            <x-admin.icon-button
+                :href="route('admin.case-files.create',$case)"
+                label="Upload File"
+                icon="+"
+                variant="accent" />
+        </x-admin.empty-state>
+    @else
+        <div class="admin-file-grid">
+            @foreach($files as $file)
+                <x-admin.file-card :case="$case" :file="$file" />
+            @endforeach
         </div>
-
-        <div class="executive-card p-6">
-
-            <h2 class="text-xl font-bold text-white mb-4">
-
-                File Types
-
-            </h2>
-
-            <div class="flex flex-wrap gap-2">
-
-                @foreach($fileTypes as $fileType)
-
-                    <span class="rounded bg-slate-800 px-3 py-2 text-sm text-slate-200">
-
-                        {{ $fileType }}
-
-                    </span>
-
-                @endforeach
-
-            </div>
-
-        </div>
-
-    </div>
-
-    <div class="executive-card overflow-hidden">
-
-        <table class="w-full">
-
-            <thead class="bg-slate-900">
-
-                <tr>
-
-                    <th class="text-left p-4">Section</th>
-                    <th class="text-left p-4">Title</th>
-                    <th class="text-left p-4">Type</th>
-                    <th class="text-left p-4">Order</th>
-                    <th class="text-left p-4">Locked</th>
-                    <th class="text-right p-4">Actions</th>
-
-                </tr>
-
-            </thead>
-
-            <tbody>
-
-            @forelse($files as $file)
-
-                <tr class="border-t border-slate-800">
-
-                    <td class="p-4">
-
-                        {{ $file->section }}
-
-                    </td>
-
-                    <td class="p-4">
-
-                        <div class="font-semibold text-white">
-
-                            {{ $file->title }}
-
-                        </div>
-
-                        @if($file->description)
-
-                            <div class="text-sm text-slate-500 mt-1">
-
-                                {{ $file->description }}
-
-                            </div>
-
-                        @endif
-
-                    </td>
-
-                    <td class="p-4">
-
-                        {{ $file->file_type }}
-
-                    </td>
-
-                    <td class="p-4">
-
-                        <form
-                            method="POST"
-                            action="{{ route('admin.case-files.reorder',$case) }}"
-                            class="flex items-center gap-2">
-
-                            @csrf
-
-                            <input
-                                type="hidden"
-                                name="files[0][id]"
-                                value="{{ $file->id }}">
-
-                            <input
-                                type="number"
-                                name="files[0][display_order]"
-                                value="{{ $file->display_order }}"
-                                class="isa-input max-w-24">
-
-                            <button
-                                type="submit"
-                                class="rounded bg-slate-700 px-3 py-2 text-white">
-
-                                Save
-
-                            </button>
-
-                        </form>
-
-                    </td>
-
-                    <td class="p-4">
-
-                        @if($file->locked)
-
-                            <span class="text-red-400">
-
-                                Locked
-
-                            </span>
-
-                        @else
-
-                            <span class="text-green-400">
-
-                                Open
-
-                            </span>
-
-                        @endif
-
-                    </td>
-
-                    <td class="p-4">
-
-                        <div class="flex justify-end gap-3">
-
-                            <a
-                                href="{{ asset($file->file_path) }}"
-                                target="_blank"
-                                class="rounded bg-slate-800 px-4 py-2 text-white">
-
-                                View
-
-                            </a>
-
-                            <form
-                                action="{{ route('admin.case-files.toggle-lock',[$case,$file]) }}"
-                                method="POST">
-
-                                @csrf
-                                @method('PATCH')
-
-                                <button
-                                    type="submit"
-                                    class="rounded bg-slate-700 px-4 py-2 text-white">
-
-                                    {{ $file->locked ? 'Unlock' : 'Lock' }}
-
-                                </button>
-
-                            </form>
-
-                            <a
-                                href="{{ route('admin.case-files.edit',[$case,$file]) }}"
-                                class="rounded bg-amber-600 px-4 py-2 text-white">
-
-                                Edit
-
-                            </a>
-
-                            <form
-                                action="{{ route('admin.case-files.destroy',[$case,$file]) }}"
-                                method="POST"
-                                onsubmit="return confirm('Delete this file?')">
-
-                                @csrf
-                                @method('DELETE')
-
-                                <button
-                                    type="submit"
-                                    class="rounded bg-red-700 px-4 py-2 text-white">
-
-                                    Delete
-
-                                </button>
-
-                            </form>
-
-                        </div>
-
-                    </td>
-
-                </tr>
-
-            @empty
-
-                <tr>
-
-                    <td colspan="6" class="text-center py-10 text-slate-500">
-
-                        No files uploaded yet.
-
-                    </td>
-
-                </tr>
-
-            @endforelse
-
-            </tbody>
-
-        </table>
-
-    </div>
+    @endif
+</div>
 
 @endsection

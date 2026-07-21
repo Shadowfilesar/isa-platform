@@ -1,0 +1,567 @@
+ممتاز، نكمل بسرعة لكن بشكل احترافي. الآن سنكتب الوثائق التي تجعل أي AI يفهم المشروع خلال دقائق.
+
+---
+
+# 13-SECURITY_POLICY.md
+
+```md
+# ISA SECURITY POLICY
+
+Version: 1.0
+
+==================================================
+PRINCIPLE
+==================================================
+
+Security is part of architecture.
+
+Not an optional feature.
+
+==================================================
+AUTHENTICATION
+==================================================
+
+Player
+
+↓
+
+Session
+
+↓
+
+Permissions
+
+↓
+
+Feature Access
+
+==================================================
+RULES
+==================================================
+
+No plaintext passwords
+
+Use Laravel Hash
+
+Validate every request
+
+CSRF enabled
+
+Authorization before execution
+
+==================================================
+FILE UPLOADS
+==================================================
+
+Validate MIME
+
+Validate Size
+
+Generate unique filenames
+
+Never trust client filename
+
+Store outside public root when possible
+
+==================================================
+DATABASE
+==================================================
+
+Use Eloquent
+
+Never concatenate SQL
+
+Always validate input
+
+==================================================
+LOGGING
+==================================================
+
+Errors
+
+Authentication
+
+Admin Actions
+
+Critical Changes
+
+==================================================
+```
+
+---
+
+# 14-TESTING_GUIDE.md
+
+```md
+# ISA TESTING GUIDE
+
+Every feature must pass these tests.
+
+==================================================
+
+UI TEST
+
+✔ Layout
+
+✔ Responsive
+
+✔ Buttons
+
+✔ Forms
+
+✔ Tables
+
+✔ Search
+
+✔ Filters
+
+==================================================
+
+BACKEND TEST
+
+✔ Validation
+
+✔ CRUD
+
+✔ Authorization
+
+✔ Session
+
+==================================================
+
+DATABASE TEST
+
+✔ Create
+
+✔ Update
+
+✔ Delete
+
+✔ Foreign Keys
+
+==================================================
+
+FILES
+
+✔ Upload
+
+✔ Download
+
+✔ Delete
+
+✔ Replace
+
+==================================================
+
+FINAL
+
+No PHP Errors
+
+No Console Errors
+
+No Broken Routes
+
+No Missing Assets
+```
+
+---
+
+# 15-NAMING_CONVENTIONS.md
+
+```md
+# ISA NAMING CONVENTIONS
+
+Controllers
+
+PlayerController
+
+CaseController
+
+MissionCodeController
+
+Services
+
+PlayerService
+
+CaseService
+
+MissionCodeService
+
+Models
+
+Player
+
+InvestigationCase
+
+MissionCode
+
+Views
+
+index.blade.php
+
+create.blade.php
+
+edit.blade.php
+
+show.blade.php
+
+CSS
+
+players.css
+
+cases.css
+
+mission-codes.css
+
+JS
+
+players.js
+
+cases.js
+
+mission-codes.js
+
+Routes
+
+players.index
+
+players.create
+
+players.store
+
+players.edit
+
+players.update
+
+players.destroy
+```
+
+---
+
+# 16-MODULE_TEMPLATE.md
+
+كل موديول جديد يجب أن يتبع هذا القالب.
+
+```md
+# MODULE TEMPLATE
+
+Module Name
+
+Purpose
+
+Dependencies
+
+Controllers
+
+Models
+
+Views
+
+CSS
+
+JS
+
+Routes
+
+Permissions
+
+Database Tables
+
+Shared Components Used
+
+Tests
+
+Stable Commit
+
+Status
+```
+
+---
+
+# 17-ISSUE_TEMPLATE.md
+
+```md
+# ISSUE TEMPLATE
+
+Title
+
+Problem
+
+Expected Behavior
+
+Current Behavior
+
+Affected Files
+
+Layer
+
+Severity
+
+Possible Cause
+
+Solution
+
+Testing
+
+Status
+```
+
+---
+
+# 18-AI_DEVELOPMENT_PROTOCOL.md ⭐
+
+**هذه أهم وثيقة في المشروع إذا كنت ستستخدم ChatGPT أو Codex أو أي AI.**
+
+```md
+# AI DEVELOPMENT PROTOCOL
+
+Before writing code
+
+STEP 1
+
+Read
+
+ISA_PROJECT_RULES
+
+↓
+
+STEP 2
+
+Read
+
+ISA_ARCHITECTURE
+
+↓
+
+STEP 3
+
+Identify Feature
+
+↓
+
+STEP 4
+
+List Allowed Files
+
+↓
+
+STEP 5
+
+List Forbidden Files
+
+↓
+
+STEP 6
+
+Dependency Analysis
+
+↓
+
+STEP 7
+
+Impact Analysis
+
+↓
+
+STEP 8
+
+Implementation
+
+↓
+
+STEP 9
+
+Testing
+
+↓
+
+STEP 10
+
+Git Commit
+
+--------------------------------------------------
+
+If any forbidden file is required
+
+STOP
+
+Explain why
+
+Wait for approval
+
+Never continue automatically.
+```
+
+---
+
+# 19-STABLE_MILESTONES.md
+
+```md
+# STABLE MILESTONES
+
+Foundation
+
+Status
+
+Stable
+
+----------------------------
+
+Authentication
+
+Stable
+
+----------------------------
+
+Players
+
+Stable
+
+----------------------------
+
+Cases
+
+Stable
+
+----------------------------
+
+Mission Codes
+
+In Progress
+
+----------------------------
+
+Board
+
+Planned
+
+----------------------------
+
+Reports
+
+Planned
+
+----------------------------
+
+Release
+
+v1.0
+
+Pending
+```
+
+---
+
+# 20-ROADMAP.md
+
+```md
+# ISA ROADMAP
+
+Phase 1
+
+Foundation
+
+✅
+
+---------------------
+
+Phase 2
+
+Authentication
+
+✅
+
+---------------------
+
+Phase 3
+
+Players
+
+✅
+
+---------------------
+
+Phase 4
+
+Cases
+
+✅
+
+---------------------
+
+Phase 5
+
+Mission Codes
+
+🚧
+
+---------------------
+
+Phase 6
+
+Investigation Board
+
+📅
+
+---------------------
+
+Phase 7
+
+Evidence Analysis
+
+📅
+
+---------------------
+
+Phase 8
+
+Reports
+
+📅
+
+---------------------
+
+Phase 9
+
+AI Assistant
+
+📅
+
+---------------------
+
+Phase 10
+
+ISA v1.0
+
+🎯
+```
+
+---
+
+# والآن أريد إضافة آخر وثيقة، وأعتبرها "الدستور التنفيذي" للمشروع
+
+## `00-README_FIRST.md`
+
+أي شخص يفتح المشروع يقرأ هذا الملف أولًا قبل أي شيء.
+
+سيكون فيه:
+
+```text
+STOP.
+
+Do NOT write code.
+
+Read these documents first:
+
+1. ISA_PROJECT_RULES.md
+2. ISA_ARCHITECTURE.md
+3. FILE_OWNERSHIP.md
+4. DEPENDENCY_MAP.md
+5. AI_DEVELOPMENT_PROTOCOL.md
+
+Only then start development.
+```
+
+## بعد هذه المجموعة
+
+سيصبح مشروع ISA ليس مجرد مشروع Laravel، بل مشروع موثق بطريقة احترافية جدًا. أي مطور جديد أو أي نموذج ذكاء اصطناعي سيتمكن من فهم القواعد، المعمارية، وآلية العمل قبل أن يكتب أول سطر كود، وهذا سيقلل الأخطاء بشكل كبير ويجعل التطوير أسرع وأكثر استقرارًا.

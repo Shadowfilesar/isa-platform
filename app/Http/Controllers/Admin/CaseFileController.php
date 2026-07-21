@@ -6,482 +6,308 @@ use App\Http\Controllers\Controller;
 use App\Models\CaseFile;
 use App\Models\InvestigationCase;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class CaseFileController extends Controller
 {
-    private array $fileTypes = [
-        'pdf',
-        'image',
-        'video',
-        'audio',
-        'text',
-        'document',
-        'archive',
+    private array $categories = [
+        'Mission',
+        'Evidence',
+        'Document',
+        'Report',
+        'Audio',
+        'Video',
+        'Image',
+        'Archive',
+        'Transcript',
+        'Reference',
     ];
 
-    public function index(
-        Request $request,
-        InvestigationCase $case
-    )
+    public function index(InvestigationCase $case)
     {
-        $validated = $request->validate([
-
-            'search' => ['nullable','string','max:255'],
-
-        ]);
-
-        $search = $validated['search'] ?? null;
-
-        $allFiles = $case->files()
-            ->orderBy('section')
-            ->orderBy('display_order')
-            ->orderBy('title')
-            ->get();
-
         $files = $case->files()
-            ->when($search, function ($query, string $search) {
-                $query->where(function ($query) use ($search) {
-                    $query
-                        ->where('title', 'like', '%'.$search.'%')
-                        ->orWhere('description', 'like', '%'.$search.'%')
-                        ->orWhere('section', 'like', '%'.$search.'%')
-                        ->orWhere('file_type', 'like', '%'.$search.'%');
-                });
-            })
+            ->with(['uploader', 'updater', 'parent'])
             ->orderBy('section')
             ->orderBy('display_order')
-            ->orderBy('title')
+            ->orderByDesc('version')
             ->get();
+
+        $sections = $case->files()
+            ->whereNotNull('section')
+            ->where('section', '!=', '')
+            ->orderBy('section')
+            ->pluck('section')
+            ->unique()
+            ->values();
+
+        $categories = $case->files()
+            ->whereNotNull('category')
+            ->where('category', '!=', '')
+            ->orderBy('category')
+            ->pluck('category')
+            ->unique()
+            ->values();
 
         return view('admin.case-files.index', [
-
             'case' => $case,
-
             'files' => $files,
-
-            'sections' => $allFiles
-                ->pluck('section')
-                ->filter()
-                ->unique()
-                ->values(),
-
-            'sectionGroups' => $files->groupBy('section'),
-
-            'search' => $search,
-
-            'stats' => [
-
-                'totalFiles' => $allFiles->count(),
-
-                'lockedFiles' => $allFiles
-                    ->where('locked', true)
-                    ->count(),
-
-                'unlockedFiles' => $allFiles
-                    ->where('locked', false)
-                    ->count(),
-
-                'totalSections' => $allFiles
-                    ->pluck('section')
-                    ->filter()
-                    ->unique()
-                    ->count(),
-
-                'lastUpdated' => $allFiles
-                    ->sortByDesc('updated_at')
-                    ->first()
-                    ?->updated_at,
-
-            ],
-
-            'fileTypes' => $this->fileTypes,
-
+            'sections' => $sections,
+            'categories' => $categories,
         ]);
     }
 
     public function create(InvestigationCase $case)
     {
-        $files = $case->files()
+        $sections = $case->files()
+            ->whereNotNull('section')
+            ->where('section', '!=', '')
             ->orderBy('section')
-            ->orderBy('display_order')
-            ->get();
+            ->pluck('section')
+            ->unique()
+            ->values();
+
+        $nextDisplayOrder = ((int) $case->files()->max('display_order')) + 1;
 
         return view('admin.case-files.create', [
-
             'case' => $case,
-
-            'sections' => $files
-                ->pluck('section')
-                ->filter()
-                ->unique()
-                ->values(),
-
-            'fileTypes' => $this->fileTypes,
-
-            'nextDisplayOrder' => ((int) $files->max('display_order')) + 1,
-
+            'sections' => $sections,
+            'categories' => $this->categories,
+            'nextDisplayOrder' => $nextDisplayOrder > 0 ? $nextDisplayOrder : 1,
         ]);
     }
 
-    public function store(
-        Request $request,
-        InvestigationCase $case
-    ) {
-
+    public function store(Request $request, InvestigationCase $case)
+    {
         $validated = $request->validate([
-
-            'section' => ['required','max:100'],
-
-            'title' => ['required','max:255'],
-
-            'description' => ['nullable'],
-
-            'file_type' => ['required', Rule::in($this->fileTypes)],
-
-            'display_order' => ['required','integer'],
-
-            'locked' => ['nullable'],
-
-            'file' => [
-                'required',
-                'file',
-                'max:102400'
-            ],
-
+            'section' => ['required', 'string', 'max:255'],
+            'category' => ['required', 'string', 'max:255'],
+            'title' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+            'display_order' => ['required', 'integer', 'min:1'],
+            'locked' => ['nullable', 'boolean'],
+            'public' => ['nullable', 'boolean'],
+            'unlock_event' => ['nullable', 'string', 'max:255'],
+            'required_rank' => ['nullable', 'string', 'max:255'],
+            'required_clearance' => ['nullable', 'string', 'max:255'],
+            'file' => ['required', 'file', 'max:102400'],
         ]);
 
-        $this->validateFileTypeMatchesMime(
-            $validated['file_type'],
-            $request->file('file')->getMimeType()
-        );
+        $uploadedFile = $request->file('file');
+        $storedPath = $uploadedFile->store('case-files', 'public');
+        $absolutePath = Storage::disk('public')->path($storedPath);
 
-        $path = $request
-            ->file('file')
-            ->store(
-                'case-files',
-                'public'
-            );
+        $originalName = $uploadedFile->getClientOriginalName();
+        $extension = strtolower($uploadedFile->getClientOriginalExtension() ?: $uploadedFile->extension() ?: '');
+        $mimeType = $uploadedFile->getMimeType() ?: $uploadedFile->getClientMimeType() ?: 'application/octet-stream';
+        $fileSize = (int) $uploadedFile->getSize();
+        $hash = is_file($absolutePath) ? hash_file('sha256', $absolutePath) : null;
+
+        $adminId = auth('admin')->id();
 
         CaseFile::create([
-
             'case_id' => $case->id,
-
             'section' => $validated['section'],
-
+            'category' => $validated['category'],
             'title' => $validated['title'],
-
             'description' => $validated['description'] ?? null,
-
-            'file_type' => $validated['file_type'],
-
+            'file_name' => pathinfo($storedPath, PATHINFO_BASENAME),
+            'original_name' => $originalName,
+            'mime_type' => $mimeType,
+            'file_size' => $fileSize,
+            'extension' => $extension,
+            'file_path' => 'storage/' . $storedPath,
             'display_order' => $validated['display_order'],
-
             'locked' => $request->boolean('locked'),
-
-            'file_path' => 'storage/'.$path,
-
+            'public' => $request->boolean('public'),
+            'unlock_event' => $validated['unlock_event'] ?? null,
+            'required_rank' => $validated['required_rank'] ?? null,
+            'required_clearance' => $validated['required_clearance'] ?? null,
+            'uploaded_by' => $adminId,
+            'updated_by' => $adminId,
+            'preview_count' => 0,
+            'download_count' => 0,
+            'sha256' => $hash,
+            'parent_file_id' => null,
+            'version' => 1,
+            'is_current' => true,
         ]);
 
         return redirect()
-
-            ->route(
-                'admin.case-files.index',
-                $case
-            )
-
-            ->with(
-                'success',
-                'File uploaded.'
-            );
+            ->route('admin.case-files.index', $case)
+            ->with('success', 'File uploaded successfully.');
     }
 
-    public function edit(
-        InvestigationCase $case,
-        CaseFile $file
-    ) {
-        $this->ensureFileBelongsToCase(
-            $case,
-            $file
-        );
+    public function show(InvestigationCase $case, CaseFile $file): StreamedResponse|BinaryFileResponse
+    {
+        $this->ensureBelongsToCase($case, $file);
 
-        $files = $case->files()
+        $path = $this->diskPath($file->file_path);
+
+        abort_unless(Storage::disk('public')->exists($path), 404);
+
+        $file->increment('download_count');
+
+        return Storage::disk('public')->download(
+            $path,
+            $file->original_name ?: $file->file_name ?: basename($path)
+        );
+    }
+
+    public function edit(InvestigationCase $case, CaseFile $file)
+    {
+        $this->ensureBelongsToCase($case, $file);
+
+        $sections = $case->files()
+            ->whereNotNull('section')
+            ->where('section', '!=', '')
             ->orderBy('section')
-            ->orderBy('display_order')
-            ->get();
+            ->pluck('section')
+            ->unique()
+            ->values();
 
         return view('admin.case-files.edit', [
-
             'case' => $case,
-
             'file' => $file,
-
-            'sections' => $files
-                ->pluck('section')
-                ->filter()
-                ->unique()
-                ->values(),
-
-            'fileTypes' => $this->fileTypes,
-
+            'sections' => $sections,
+            'categories' => $this->categories,
         ]);
     }
 
-    public function update(
-        Request $request,
-        InvestigationCase $case,
-        CaseFile $file
-    ) {
-        $this->ensureFileBelongsToCase(
-            $case,
-            $file
-        );
+    public function update(Request $request, InvestigationCase $case, CaseFile $file)
+    {
+        $this->ensureBelongsToCase($case, $file);
 
         $validated = $request->validate([
-
-            'section' => ['required','max:100'],
-
-            'title' => ['required','max:255'],
-
-            'description' => ['nullable'],
-
-            'file_type' => ['required', Rule::in($this->fileTypes)],
-
-            'display_order' => ['required','integer'],
-
-            'locked' => ['nullable'],
-
-            'file' => [
-                'nullable',
-                'file',
-                'max:102400'
-            ],
-
+            'section' => ['required', 'string', 'max:255'],
+            'category' => ['required', 'string', 'max:255'],
+            'title' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+            'display_order' => ['required', 'integer', 'min:1'],
+            'locked' => ['nullable', 'boolean'],
+            'public' => ['nullable', 'boolean'],
+            'unlock_event' => ['nullable', 'string', 'max:255'],
+            'required_rank' => ['nullable', 'string', 'max:255'],
+            'required_clearance' => ['nullable', 'string', 'max:255'],
+            'file' => ['nullable', 'file', 'max:102400'],
         ]);
 
-        $filePath = $file->file_path;
+        $data = [
+            'section' => $validated['section'],
+            'category' => $validated['category'],
+            'title' => $validated['title'],
+            'description' => $validated['description'] ?? null,
+            'display_order' => $validated['display_order'],
+            'locked' => $request->boolean('locked'),
+            'public' => $request->boolean('public'),
+            'unlock_event' => $validated['unlock_event'] ?? null,
+            'required_rank' => $validated['required_rank'] ?? null,
+            'required_clearance' => $validated['required_clearance'] ?? null,
+            'updated_by' => auth('admin')->id(),
+        ];
 
         if ($request->hasFile('file')) {
+            $uploadedFile = $request->file('file');
+            $storedPath = $uploadedFile->store('case-files', 'public');
+            $absolutePath = Storage::disk('public')->path($storedPath);
 
-            $this->validateFileTypeMatchesMime(
-                $validated['file_type'],
-                $request->file('file')->getMimeType()
-            );
+            $oldPath = $this->diskPath($file->file_path);
+            if ($oldPath !== '' && Storage::disk('public')->exists($oldPath)) {
+                Storage::disk('public')->delete($oldPath);
+            }
 
-            $this->deleteStoredFile($file);
-
-            $path = $request
-                ->file('file')
-                ->store(
-                    'case-files',
-                    'public'
-                );
-
-            $filePath = 'storage/'.$path;
+            $data['file_name'] = pathinfo($storedPath, PATHINFO_BASENAME);
+            $data['original_name'] = $uploadedFile->getClientOriginalName();
+            $data['mime_type'] = $uploadedFile->getMimeType() ?: $uploadedFile->getClientMimeType() ?: 'application/octet-stream';
+            $data['file_size'] = (int) $uploadedFile->getSize();
+            $data['extension'] = strtolower($uploadedFile->getClientOriginalExtension() ?: $uploadedFile->extension() ?: '');
+            $data['file_path'] = 'storage/' . $storedPath;
+            $data['sha256'] = is_file($absolutePath) ? hash_file('sha256', $absolutePath) : null;
         }
 
-        $file->update([
-
-            'section' => $validated['section'],
-
-            'title' => $validated['title'],
-
-            'description' => $validated['description'] ?? null,
-
-            'file_type' => $validated['file_type'],
-
-            'display_order' => $validated['display_order'],
-
-            'locked' => $request->boolean('locked'),
-
-            'file_path' => $filePath,
-
-        ]);
+        $file->update($data);
 
         return redirect()
-
-            ->route(
-                'admin.case-files.index',
-                $case
-            )
-
-            ->with(
-                'success',
-                'File updated.'
-            );
+            ->route('admin.case-files.index', $case)
+            ->with('success', 'File updated successfully.');
     }
 
-    public function destroy(
-        InvestigationCase $case,
-        CaseFile $file
-    ) {
-        $this->ensureFileBelongsToCase(
-            $case,
-            $file
-        );
+    public function destroy(InvestigationCase $case, CaseFile $file)
+    {
+        $this->ensureBelongsToCase($case, $file);
 
-        $this->deleteStoredFile($file);
+        $path = $this->diskPath($file->file_path);
+
+        if ($path !== '' && Storage::disk('public')->exists($path)) {
+            Storage::disk('public')->delete($path);
+        }
 
         $file->delete();
 
         return redirect()
-
-            ->route(
-                'admin.case-files.index',
-                $case
-            )
-
-            ->with(
-                'success',
-                'File deleted.'
-            );
+            ->route('admin.case-files.index', $case)
+            ->with('success', 'File deleted successfully.');
     }
 
-    public function reorder(
-        Request $request,
-        InvestigationCase $case
-    ) {
+    public function reorder(Request $request, InvestigationCase $case)
+    {
         $validated = $request->validate([
-
-            'files' => ['required','array'],
-
+            'files' => ['required', 'array', 'min:1'],
             'files.*.id' => [
                 'required',
                 'integer',
-                Rule::exists('case_files','id')
-                    ->where(fn ($query) => $query->where('case_id', $case->id)),
+                Rule::exists('case_files', 'id')->where(function ($query) use ($case) {
+                    $query->where('case_id', $case->id);
+                }),
             ],
-
-            'files.*.display_order' => ['required','integer'],
-
+            'files.*.display_order' => ['required', 'integer', 'min:1'],
         ]);
 
-        foreach ($validated['files'] as $fileOrder) {
-
+        foreach ($validated['files'] as $item) {
             $case->files()
-                ->where('id', $fileOrder['id'])
+                ->where('id', $item['id'])
                 ->update([
-                    'display_order' => $fileOrder['display_order'],
+                    'display_order' => $item['display_order'],
+                    'updated_by' => auth('admin')->id(),
                 ]);
         }
 
         return redirect()
-
-            ->route(
-                'admin.case-files.index',
-                $case
-            )
-
-            ->with(
-                'success',
-                'File order updated.'
-            );
+            ->route('admin.case-files.index', $case)
+            ->with('success', 'File order updated successfully.');
     }
 
-    public function toggleLock(
-        InvestigationCase $case,
-        CaseFile $file
-    ) {
-        $this->ensureFileBelongsToCase(
-            $case,
-            $file
-        );
+    public function toggleLock(InvestigationCase $case, CaseFile $file)
+    {
+        $this->ensureBelongsToCase($case, $file);
 
         $file->update([
             'locked' => ! $file->locked,
+            'updated_by' => auth('admin')->id(),
         ]);
 
         return redirect()
-
-            ->route(
-                'admin.case-files.index',
-                $case
-            )
-
-            ->with(
-                'success',
-                $file->locked ? 'File locked.' : 'File unlocked.'
-            );
+            ->route('admin.case-files.index', $case)
+            ->with('success', $file->locked ? 'File locked successfully.' : 'File unlocked successfully.');
     }
 
-    private function ensureFileBelongsToCase(
-        InvestigationCase $case,
-        CaseFile $file
-    ): void {
-        abort_if(
-            $file->case_id !== $case->id,
-            404
-        );
-    }
-
-    private function deleteStoredFile(CaseFile $file): void
+    private function ensureBelongsToCase(InvestigationCase $case, CaseFile $file): void
     {
-        $path = $this->publicStoragePath($file);
-
-        if ($path !== '') {
-
-            Storage::disk('public')->delete($path);
-        }
+        abort_if($file->case_id !== $case->id, 404);
     }
 
-    private function publicStoragePath(CaseFile $file): string
+    private function diskPath(?string $filePath): string
     {
-        return str($file->file_path)
-            ->replaceStart('storage/', '')
-            ->toString();
-    }
+        $path = (string) $filePath;
 
-    private function validateFileTypeMatchesMime(
-        string $fileType,
-        ?string $mimeType
-    ): void {
-        if (! $mimeType || ! $this->mimeMatchesFileType($fileType, $mimeType)) {
-
-            throw ValidationException::withMessages([
-                'file' => 'The uploaded file does not match the selected file type.',
-            ]);
+        if (Str::startsWith($path, 'storage/')) {
+            return Str::after($path, 'storage/');
         }
-    }
 
-    private function mimeMatchesFileType(
-        string $fileType,
-        string $mimeType
-    ): bool {
-        return match ($fileType) {
-            'pdf' => $mimeType === 'application/pdf',
-            'image' => str_starts_with($mimeType, 'image/'),
-            'video' => str_starts_with($mimeType, 'video/'),
-            'audio' => str_starts_with($mimeType, 'audio/'),
-            'text' => str_starts_with($mimeType, 'text/')
-                || in_array($mimeType, [
-                    'application/json',
-                    'application/xml',
-                ], true),
-            'document' => in_array($mimeType, [
-                'application/msword',
-                'application/rtf',
-                'application/vnd.ms-excel',
-                'application/vnd.ms-powerpoint',
-                'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-                'application/vnd.oasis.opendocument.presentation',
-                'application/vnd.oasis.opendocument.spreadsheet',
-                'application/vnd.oasis.opendocument.text',
-            ], true),
-            'archive' => in_array($mimeType, [
-                'application/gzip',
-                'application/java-archive',
-                'application/vnd.rar',
-                'application/x-7z-compressed',
-                'application/x-bzip2',
-                'application/x-gzip',
-                'application/x-rar-compressed',
-                'application/zip',
-            ], true),
-            default => false,
-        };
+        return ltrim($path, '/');
     }
 }

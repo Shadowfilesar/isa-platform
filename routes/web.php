@@ -16,7 +16,6 @@ use App\Http\Controllers\Admin\CaseFileController as AdminCaseFileController;
 use App\Http\Controllers\Admin\MissionCodeController as AdminMissionCodeController;
 
 Route::middleware('guest.player')->group(function () {
-
     Route::get('/', fn () => redirect()->route('login'));
 
     Route::get('/login', [AuthController::class, 'create'])
@@ -33,7 +32,6 @@ Route::middleware('guest.player')->group(function () {
 });
 
 Route::middleware('auth.player')->group(function () {
-
     Route::get('/dashboard', [DashboardController::class, 'index'])
         ->name('dashboard');
 
@@ -90,7 +88,6 @@ Route::middleware('auth.player')->group(function () {
 */
 
 Route::prefix('admin')->group(function () {
-
     Route::get('/login', [AdminAuthController::class, 'create'])
         ->name('admin.login');
 
@@ -98,7 +95,6 @@ Route::prefix('admin')->group(function () {
         ->name('admin.login.store');
 
     Route::middleware('auth.admin')->group(function () {
-
         Route::get('/', [AdminDashboardController::class, 'index'])
             ->name('admin.dashboard');
 
@@ -144,6 +140,11 @@ Route::prefix('admin')->group(function () {
         )->name('admin.case-files.store');
 
         Route::get(
+            '/cases/{case}/files/{file}',
+            [AdminCaseFileController::class, 'show']
+        )->name('admin.case-files.show');
+
+        Route::get(
             '/cases/{case}/files/{file}/edit',
             [AdminCaseFileController::class, 'edit']
         )->name('admin.case-files.edit');
@@ -177,7 +178,5 @@ Route::prefix('admin')->group(function () {
 
         Route::post('/players/{player}/assign-cases', [PlayerController::class, 'saveAssignedCases'])
             ->name('admin.players.assign-cases.save');
-
     });
-
 });
