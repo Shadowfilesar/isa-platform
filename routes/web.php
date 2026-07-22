@@ -8,12 +8,14 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CaseController;
 use App\Http\Controllers\CaseFileController;
+use App\Http\Controllers\MessageController;
 use App\Http\Controllers\Admin\PlayerController;
 use App\Http\Controllers\Admin\AuthController as AdminAuthController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\CaseController as AdminCaseController;
 use App\Http\Controllers\Admin\CaseFileController as AdminCaseFileController;
 use App\Http\Controllers\Admin\MissionCodeController as AdminMissionCodeController;
+use App\Http\Controllers\Admin\DirectorMessageController as AdminDirectorMessageController;
 
 Route::middleware('guest.player')->group(function () {
     Route::get('/', fn () => redirect()->route('login'));
@@ -79,13 +81,13 @@ Route::middleware('auth.player')->group(function () {
 
     Route::get('/cases/{code}/submit-report', [CaseController::class, 'submitReport'])
         ->name('cases.submit-report');
-});
 
-/*
-|--------------------------------------------------------------------------
-| Admin Panel
-|--------------------------------------------------------------------------
-*/
+    Route::get('/messages', [MessageController::class, 'index'])
+        ->name('messages.index');
+
+    Route::get('/messages/{message}', [MessageController::class, 'show'])
+        ->name('messages.show');
+});
 
 Route::prefix('admin')->group(function () {
     Route::get('/login', [AdminAuthController::class, 'create'])
@@ -178,5 +180,11 @@ Route::prefix('admin')->group(function () {
 
         Route::post('/players/{player}/assign-cases', [PlayerController::class, 'saveAssignedCases'])
             ->name('admin.players.assign-cases.save');
+
+        Route::get('/messages/create', [AdminDirectorMessageController::class, 'create'])
+            ->name('admin.messages.create');
+
+        Route::post('/messages', [AdminDirectorMessageController::class, 'store'])
+            ->name('admin.messages.store');
     });
 });

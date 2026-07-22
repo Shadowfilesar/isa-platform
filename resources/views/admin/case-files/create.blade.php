@@ -1,138 +1,108 @@
+<?php
+// resources/views/admin/case-files/create.blade.php
+?>
 @extends('layouts.admin')
 
-@section('title','Upload File')
+@section('title', 'Upload Case File')
 
-@section('content')
+@section('admin-content')
+<div class="space-y-6">
+    <div class="executive-card p-6">
+        <div class="mb-6">
+            <h1 class="text-3xl font-bold text-white">Upload Case File</h1>
+            <p class="mt-2 text-slate-400">Add a new file to <span class="text-amber-400">{{ $case->title }}</span>.</p>
+        </div>
 
-@php
-    $breadcrumbs = [
-        ['label' => 'Dashboard', 'href' => route('admin.dashboard')],
-        ['label' => 'Cases', 'href' => route('admin.cases.index')],
-        ['label' => $case->code . ' Files', 'href' => route('admin.case-files.index',$case)],
-        ['label' => 'Upload File'],
-    ];
-@endphp
-
-<div class="p-10 admin-page-stack">
-    <x-admin.breadcrumbs :items="$breadcrumbs" />
-
-    <x-admin.action-toolbar
-        title="Upload File"
-        :subtitle="$case->code . ' / ' . $case->title">
-        <x-slot:actions>
-            <x-admin.icon-button
-                :href="route('admin.case-files.index',$case)"
-                label="Back"
-                icon="←"
-                variant="neutral" />
-        </x-slot:actions>
-    </x-admin.action-toolbar>
-
-    @if($errors->any())
-        <x-admin.empty-state
-            title="Please correct the form"
-            :message="$errors->first()" />
-    @endif
-
-    <div class="executive-card p-8">
-        <form
-            method="POST"
-            action="{{ route('admin.case-files.store',$case) }}"
-            enctype="multipart/form-data"
-            class="space-y-6">
+        <form action="{{ route('admin.case-files.store', $case) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
             @csrf
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <label class="block mb-2 text-slate-400">Section</label>
-                    <input name="section" value="{{ old('section') }}" list="case-file-sections" placeholder="Mission" class="isa-input">
+            <div>
+                <label for="title" class="mb-2 block text-sm font-medium text-slate-300">Title</label>
+                <input
+                    type="text"
+                    name="title"
+                    id="title"
+                    value="{{ old('title') }}"
+                    required
+                    class="w-full rounded-lg border border-slate-700 bg-slate-900 px-4 py-3 text-white focus:border-amber-500 focus:outline-none">
+            </div>
 
-                    <datalist id="case-file-sections">
-                        @foreach($sections as $section)
-                            <option value="{{ $section }}"></option>
+            <div class="grid gap-6 md:grid-cols-2">
+                <div>
+                    <label for="category" class="mb-2 block text-sm font-medium text-slate-300">Category</label>
+                    <select
+                        name="category"
+                        id="category"
+                        required
+                        class="w-full rounded-lg border border-slate-700 bg-slate-900 px-4 py-3 text-white focus:border-amber-500 focus:outline-none">
+                        <option value="">Select category</option>
+                        @foreach(($categories ?? []) as $category)
+                            <option value="{{ $category }}" {{ old('category') === $category ? 'selected' : '' }}>
+                                {{ $category }}
+                            </option>
                         @endforeach
-                    </datalist>
+                    </select>
                 </div>
 
                 <div>
-                    <label class="block mb-2 text-slate-400">Category</label>
-                    <input name="category" value="{{ old('category') }}" list="case-file-categories" placeholder="Evidence" class="isa-input">
-
-                    <datalist id="case-file-categories">
-                        @foreach($categories as $category)
-                            <option value="{{ $category }}"></option>
-                        @endforeach
-                    </datalist>
+                    <label for="display_order" class="mb-2 block text-sm font-medium text-slate-300">Display Order</label>
+                    <input
+                        type="number"
+                        name="display_order"
+                        id="display_order"
+                        value="{{ old('display_order', 0) }}"
+                        required
+                        class="w-full rounded-lg border border-slate-700 bg-slate-900 px-4 py-3 text-white focus:border-amber-500 focus:outline-none">
                 </div>
             </div>
 
             <div>
-                <label class="block mb-2 text-slate-400">Title</label>
-                <input name="title" value="{{ old('title') }}" placeholder="Mission Brief" class="isa-input">
+                <label for="section" class="mb-2 block text-sm font-medium text-slate-300">Section</label>
+                <input
+                    type="text"
+                    name="section"
+                    id="section"
+                    list="section-suggestions"
+                    value="{{ old('section') }}"
+                    required
+                    placeholder="Type or choose a section"
+                    class="w-full rounded-lg border border-slate-700 bg-slate-900 px-4 py-3 text-white focus:border-amber-500 focus:outline-none">
+                <datalist id="section-suggestions">
+                    @foreach(($sections ?? []) as $section)
+                        <option value="{{ $section }}">
+                    @endforeach
+                </datalist>
             </div>
 
             <div>
-                <label class="block mb-2 text-slate-400">Description</label>
-                <textarea name="description" rows="4" class="isa-input">{{ old('description') }}</textarea>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <label class="block mb-2 text-slate-400">Display Order</label>
-                    <input type="number" name="display_order" value="{{ old('display_order',$nextDisplayOrder) }}" class="isa-input">
-                </div>
-
-                <div class="grid grid-cols-2 gap-4 items-end">
-                    <label class="flex items-center gap-3 text-slate-300">
-                        <input type="checkbox" name="locked" value="1" @checked(old('locked'))>
-                        Locked
-                    </label>
-
-                    <label class="flex items-center gap-3 text-slate-300">
-                        <input type="checkbox" name="public" value="1" @checked(old('public'))>
-                        Public
-                    </label>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div>
-                    <label class="block mb-2 text-slate-400">Unlock Event</label>
-                    <input name="unlock_event" value="{{ old('unlock_event') }}" placeholder="mission_completed" class="isa-input">
-                </div>
-
-                <div>
-                    <label class="block mb-2 text-slate-400">Required Rank</label>
-                    <input name="required_rank" value="{{ old('required_rank') }}" placeholder="Detective" class="isa-input">
-                </div>
-
-                <div>
-                    <label class="block mb-2 text-slate-400">Required Clearance</label>
-                    <input name="required_clearance" value="{{ old('required_clearance') }}" placeholder="Level 2" class="isa-input">
-                </div>
+                <label for="description" class="mb-2 block text-sm font-medium text-slate-300">Description</label>
+                <textarea
+                    name="description"
+                    id="description"
+                    rows="5"
+                    required
+                    class="w-full rounded-lg border border-slate-700 bg-slate-900 px-4 py-3 text-white focus:border-amber-500 focus:outline-none">{{ old('description') }}</textarea>
             </div>
 
             <div>
-                <label class="block mb-2 text-slate-400">File</label>
-                <input type="file" name="file" class="isa-input">
+                <label for="file" class="mb-2 block text-sm font-medium text-slate-300">Upload File</label>
+                <input
+                    type="file"
+                    name="file"
+                    id="file"
+                    required
+                    class="block w-full rounded-lg border border-slate-700 bg-slate-900 px-4 py-3 text-slate-300 file:mr-4 file:rounded-md file:border-0 file:bg-amber-600 file:px-4 file:py-2 file:text-white hover:file:bg-amber-500">
             </div>
 
-            <div class="flex justify-end gap-3">
-                <x-admin.icon-button
-                    :href="route('admin.case-files.index',$case)"
-                    label="Cancel"
-                    icon="←"
-                    variant="neutral" />
-
-                <button type="submit">
-                    <x-admin.icon-button
-                        label="Upload"
-                        icon="↑"
-                        variant="accent" />
+            <div class="flex items-center justify-end gap-3 border-t border-slate-800 pt-6">
+                <a href="{{ route('admin.case-files.index', $case) }}" class="rounded-lg border border-slate-700 px-5 py-3 text-white hover:bg-slate-800">
+                    Cancel
+                </a>
+                <button type="submit" class="rounded-lg bg-amber-600 px-5 py-3 font-semibold text-white hover:bg-amber-500">
+                    Upload File
                 </button>
             </div>
         </form>
     </div>
 </div>
-
 @endsection

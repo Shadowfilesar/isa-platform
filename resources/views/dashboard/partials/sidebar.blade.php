@@ -28,6 +28,11 @@
            class="block rounded-lg px-4 py-3 text-slate-300 hover:bg-slate-800">
             Cases
         </a>
+        
+        <a href="{{ route('messages.index') }}"
+           class="block rounded-lg px-4 py-3 text-slate-300 hover:bg-slate-800">
+            Messages
+        </a>
 
     </nav>
 

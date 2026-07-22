@@ -1,177 +1,111 @@
+<?php
+// resources/views/admin/case-files/edit.blade.php
+?>
 @extends('layouts.admin')
 
-@section('title','Edit File')
+@section('title', 'Edit Case File')
 
-@section('content')
+@section('admin-content')
+<div class="space-y-6">
+    <div class="executive-card p-6">
+        <div class="mb-6">
+            <h1 class="text-3xl font-bold text-white">Edit Case File</h1>
+            <p class="mt-2 text-slate-400">Update file details for <span class="text-amber-400">{{ $case->title }}</span>.</p>
+        </div>
 
-@php
-    $breadcrumbs = [
-        ['label' => 'Dashboard', 'href' => route('admin.dashboard')],
-        ['label' => 'Cases', 'href' => route('admin.cases.index')],
-        ['label' => $case->code . ' Files', 'href' => route('admin.case-files.index',$case)],
-        ['label' => 'Edit File'],
-    ];
-@endphp
-
-<div class="p-10 admin-page-stack">
-    <x-admin.breadcrumbs :items="$breadcrumbs" />
-
-    <x-admin.action-toolbar
-        title="Edit File"
-        :subtitle="$case->code . ' / ' . $file->title">
-        <x-slot:actions>
-            <x-admin.icon-button
-                :href="route('admin.case-files.index',$case)"
-                label="Back"
-                icon="←"
-                variant="neutral" />
-        </x-slot:actions>
-    </x-admin.action-toolbar>
-
-    @if($errors->any())
-        <x-admin.empty-state
-            title="Please correct the form"
-            :message="$errors->first()" />
-    @endif
-
-    <div class="executive-card p-8">
-        <form
-            method="POST"
-            action="{{ route('admin.case-files.update',[$case,$file]) }}"
-            enctype="multipart/form-data"
-            class="space-y-6">
+        <form action="{{ route('admin.case-files.update', [$case, $file]) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
             @csrf
             @method('PUT')
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <label class="block mb-2 text-slate-400">Section</label>
-                    <input name="section" value="{{ old('section',$file->section) }}" list="case-file-sections" class="isa-input">
+            <div>
+                <label for="title" class="mb-2 block text-sm font-medium text-slate-300">Title</label>
+                <input
+                    type="text"
+                    name="title"
+                    id="title"
+                    value="{{ old('title', $file->title) }}"
+                    required
+                    class="w-full rounded-lg border border-slate-700 bg-slate-900 px-4 py-3 text-white focus:border-amber-500 focus:outline-none">
+            </div>
 
-                    <datalist id="case-file-sections">
-                        @foreach($sections as $section)
-                            <option value="{{ $section }}"></option>
+            <div class="grid gap-6 md:grid-cols-2">
+                <div>
+                    <label for="category" class="mb-2 block text-sm font-medium text-slate-300">Category</label>
+                    <select
+                        name="category"
+                        id="category"
+                        required
+                        class="w-full rounded-lg border border-slate-700 bg-slate-900 px-4 py-3 text-white focus:border-amber-500 focus:outline-none">
+                        <option value="">Select category</option>
+                        @foreach(($categories ?? []) as $category)
+                            <option value="{{ $category }}" {{ old('category', $file->category) === $category ? 'selected' : '' }}>
+                                {{ $category }}
+                            </option>
                         @endforeach
-                    </datalist>
+                    </select>
                 </div>
 
                 <div>
-                    <label class="block mb-2 text-slate-400">Category</label>
-                    <input name="category" value="{{ old('category',$file->category) }}" list="case-file-categories" class="isa-input">
-
-                    <datalist id="case-file-categories">
-                        @foreach($categories as $category)
-                            <option value="{{ $category }}"></option>
-                        @endforeach
-                    </datalist>
+                    <label for="display_order" class="mb-2 block text-sm font-medium text-slate-300">Display Order</label>
+                    <input
+                        type="number"
+                        name="display_order"
+                        id="display_order"
+                        value="{{ old('display_order', $file->display_order) }}"
+                        required
+                        class="w-full rounded-lg border border-slate-700 bg-slate-900 px-4 py-3 text-white focus:border-amber-500 focus:outline-none">
                 </div>
             </div>
 
             <div>
-                <label class="block mb-2 text-slate-400">Title</label>
-                <input name="title" value="{{ old('title',$file->title) }}" class="isa-input">
+                <label for="section" class="mb-2 block text-sm font-medium text-slate-300">Section</label>
+                <input
+                    type="text"
+                    name="section"
+                    id="section"
+                    list="section-suggestions"
+                    value="{{ old('section', $file->section) }}"
+                    required
+                    placeholder="Type or choose a section"
+                    class="w-full rounded-lg border border-slate-700 bg-slate-900 px-4 py-3 text-white focus:border-amber-500 focus:outline-none">
+                <datalist id="section-suggestions">
+                    @foreach(($sections ?? []) as $section)
+                        <option value="{{ $section }}">
+                    @endforeach
+                </datalist>
             </div>
 
             <div>
-                <label class="block mb-2 text-slate-400">Description</label>
-                <textarea name="description" rows="4" class="isa-input">{{ old('description',$file->description) }}</textarea>
+                <label for="description" class="mb-2 block text-sm font-medium text-slate-300">Description</label>
+                <textarea
+                    name="description"
+                    id="description"
+                    rows="5"
+                    required
+                    class="w-full rounded-lg border border-slate-700 bg-slate-900 px-4 py-3 text-white focus:border-amber-500 focus:outline-none">{{ old('description', $file->description) }}</textarea>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <label class="block mb-2 text-slate-400">Display Order</label>
-                    <input type="number" name="display_order" value="{{ old('display_order',$file->display_order) }}" class="isa-input">
-                </div>
-
-                <div class="grid grid-cols-2 gap-4 items-end">
-                    <label class="flex items-center gap-3 text-slate-300">
-                        <input type="checkbox" name="locked" value="1" @checked(old('locked',$file->locked))>
-                        Locked
-                    </label>
-
-                    <label class="flex items-center gap-3 text-slate-300">
-                        <input type="checkbox" name="public" value="1" @checked(old('public',$file->public))>
-                        Public
-                    </label>
-                </div>
+            <div>
+                <label for="file" class="mb-2 block text-sm font-medium text-slate-300">Upload File</label>
+                <input
+                    type="file"
+                    name="file"
+                    id="file"
+                    class="block w-full rounded-lg border border-slate-700 bg-slate-900 px-4 py-3 text-slate-300 file:mr-4 file:rounded-md file:border-0 file:bg-amber-600 file:px-4 file:py-2 file:text-white hover:file:bg-amber-500">
+                @if(!empty($file->file_path))
+                    <p class="mt-2 text-sm text-slate-500">Current file: {{ basename($file->file_path) }}</p>
+                @endif
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div>
-                    <label class="block mb-2 text-slate-400">Unlock Event</label>
-                    <input name="unlock_event" value="{{ old('unlock_event',$file->unlock_event) }}" class="isa-input">
-                </div>
-
-                <div>
-                    <label class="block mb-2 text-slate-400">Required Rank</label>
-                    <input name="required_rank" value="{{ old('required_rank',$file->required_rank) }}" class="isa-input">
-                </div>
-
-                <div>
-                    <label class="block mb-2 text-slate-400">Required Clearance</label>
-                    <input name="required_clearance" value="{{ old('required_clearance',$file->required_clearance) }}" class="isa-input">
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div class="rounded-2xl border border-slate-800 bg-slate-950/50 p-5">
-                    <div class="text-sm font-semibold text-white mb-3">Current File</div>
-
-                    <div class="space-y-3">
-                        <a
-                            href="{{ route('admin.case-files.show',[$case,$file]) }}"
-                            class="text-amber-400">
-                            {{ $file->original_name ?: $file->file_name ?: $file->file_path }}
-                        </a>
-
-                        <x-admin.meta-list :items="[
-                            ['label' => 'MIME', 'value' => $file->mime_type ?: '-'],
-                            ['label' => 'Size', 'value' => $file->file_size ? number_format($file->file_size) . ' bytes' : '-'],
-                            ['label' => 'Extension', 'value' => $file->extension ?: '-'],
-                            ['label' => 'Downloads', 'value' => $file->download_count ?? 0],
-                            ['label' => 'Previews', 'value' => $file->preview_count ?? 0],
-                            ['label' => 'Version', 'value' => $file->version ?? 1],
-                            ['label' => 'SHA256', 'value' => $file->sha256],
-                        ]" />
-
-                        <div class="flex gap-3">
-                            <x-admin.icon-button
-                                :href="route('admin.case-files.show',[$case,$file])"
-                                label="Preview"
-                                icon="◫"
-                                variant="neutral" />
-
-                            <x-admin.icon-button
-                                :href="route('admin.case-files.show',[$case,$file])"
-                                label="Download"
-                                icon="↓"
-                                variant="info" />
-                        </div>
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block mb-2 text-slate-400">Replace File</label>
-                    <input type="file" name="file" class="isa-input">
-                </div>
-            </div>
-
-            <div class="flex justify-end gap-3">
-                <x-admin.icon-button
-                    :href="route('admin.case-files.index',$case)"
-                    label="Cancel"
-                    icon="←"
-                    variant="neutral" />
-
-                <button type="submit">
-                    <x-admin.icon-button
-                        label="Save Changes"
-                        icon="✓"
-                        variant="accent" />
+            <div class="flex items-center justify-end gap-3 border-t border-slate-800 pt-6">
+                <a href="{{ route('admin.case-files.index', $case) }}" class="rounded-lg border border-slate-700 px-5 py-3 text-white hover:bg-slate-800">
+                    Cancel
+                </a>
+                <button type="submit" class="rounded-lg bg-amber-600 px-5 py-3 font-semibold text-white hover:bg-amber-500">
+                    Save Changes
                 </button>
             </div>
         </form>
     </div>
 </div>
-
 @endsection
